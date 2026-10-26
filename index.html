@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#102c2a">
+  <meta name="description" content="按天气、水域、水深和目标鱼，快速查找路亚饵、钓组与操作方法。支持离线使用。">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="stylesheet" href="style.css?v=15">
+  <link rel="stylesheet" href="fishing-map.css?v=1">
+  <title>路亚指南｜看鱼情选饵</title>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#home" aria-label="路亚指南首页"><img class="brand-mark-image" src="./logo-hupao-white.png" alt="手写个人标志"><span>野路<span class="brand-light">指南</span></span></a>
+    <div class="top-actions"><span class="offline-pill"><i></i> 离线可用</span><button class="icon-button" id="installBtn" hidden aria-label="安装到手机">＋</button></div>
+  </header>
+
+  <main id="home">
+    <section class="hero">
+      <div class="hero-copy"><span class="eyebrow">FIELD GUIDE · 2026</span><h1>看鱼情，<br><em>选对饵。</em></h1><p>天气、水层、水域和目标鱼一起看，快速找到下一竿的思路。</p></div>
+      <div class="hero-art" aria-hidden="true"><img class="hero-photo" src="./hero-fisher.jpg" alt=""></div>
+      <div class="hero-foot"><span>01 / 选择现场条件</span><span>↓</span></div>
+    </section>
+
+    <nav class="tabs" aria-label="主要导航">
+      <button class="tab active" data-page="recommend">选饵建议</button><button class="tab" data-page="lures">饵型图鉴 <b id="lureCount"></b></button><button class="tab" data-page="fish">鱼种图鉴 <b id="fishCount"></b></button><button class="tab" data-page="rigs">钓组速查</button><button class="tab" data-page="map">钓点地图</button>
+    </nav>
+
+    <section class="page active" id="page-recommend">
+      <div class="section-heading"><div><span class="eyebrow">START HERE</span><h2>现在的水情</h2></div><span class="step-count">01 — 04</span></div>
+      <section class="forecast-panel" aria-labelledby="forecastTitle">
+        <div class="forecast-heading"><div><span class="eyebrow">LIVE CONDITIONS</span><h3 id="forecastTitle">天气 · 潮汐 · 适钓建议</h3></div><span class="forecast-live"><i></i>联网更新</span></div>
+        <div class="location-row"><label class="sr-only" for="locationInput">城市或钓点</label><input id="locationInput" type="search" placeholder="输入中国城市名，例如：牡丹江、湛江"><button id="locationSearchBtn" class="location-button">查天气</button><button id="locateBtn" class="locate-button" type="button">定位</button></div>
+        <p id="forecastStatus" class="forecast-status" aria-live="polite">输入城市查天气；点击“定位”可查看当前位置。天气与潮汐数据需要联网。</p>
+        <div id="forecastContent" class="forecast-content" hidden>
+          <div class="forecast-place-row"><strong id="forecastPlace"></strong><span id="forecastUpdated"></span></div>
+          <div id="currentWeather" class="current-weather"></div>
+          <div class="hourly-forecast"><div class="forecast-subhead"><strong>未来天气</strong><span>逐小时 · 未来 18 小时</span></div><div id="hourlyStrip" class="hourly-strip"></div></div>
+          <div id="tidePanel" class="tide-panel"></div>
+          <div id="fishingAnalysis" class="fishing-analysis"></div>
+        </div>
+        <div class="forecast-credit">天气数据：<a href="https://open-meteo.com/" target="_blank" rel="noreferrer">Open-Meteo</a> · 海浪模型：<a href="https://www.dwd.de/EN/Home/home_node.html" target="_blank" rel="noreferrer">DWD</a> · 潮位为模型趋势参考，近岸精度有限，不可用于航行或安全决策。</div>
+      </section>
+      <div class="selector-grid">
+        <label class="field"><span>目标鱼</span><select id="fishSelect"></select></label>
+        <label class="field"><span>天气</span><select id="weatherSelect"><option value="sunny">晴 / 强光</option><option value="cloudy" selected>多云 / 阴天</option><option value="overcast">阴雨 / 低光</option><option value="windy">有风 / 起浪</option><option value="afterRain">雨后 / 水色变化</option></select></label>
+        <label class="field"><span>水域</span><select id="waterSelect"><option value="lake">湖库 / 静水</option><option value="river">河流 / 有流</option><option value="pond">池塘 / 小水面</option><option value="coast">近岸海水</option><option value="stream">溪流 / 山涧</option></select></label>
+        <label class="field"><span>作钓水深</span><select id="depthSelect"><option value="shallow">浅层 · 0–1 m</option><option value="mid" selected>中层 · 1–3 m</option><option value="deep">深层 · 3 m+</option><option value="bottom">贴底 / 结构区</option></select></label>
+        <label class="field"><span>水体能见度</span><select id="claritySelect"><option value="clear">清澈 · 能见度高</option><option value="normal" selected>一般</option><option value="stained">浑水 / 能见度低</option></select></label>
+        <label class="field"><span>季节</span><select id="seasonSelect"><option value="spring">春</option><option value="summer" selected>夏</option><option value="autumn">秋</option><option value="winter">冬</option></select></label>
+      </div>
+      <div class="action-row"><button id="recommendBtn" class="primary-button">给我选饵 <span>↗</span></button><span class="hint">按当前条件生成 3 个起手方案</span></div>
+      <div id="results" class="results" aria-live="polite"></div>
+      <div class="principle"><span class="principle-icon">✳</span><div><strong>先找水层，再换饵型</strong><p>先确认鱼在哪里，再让拟饵经过它的视线范围。饵的颜色和动作是第二步。</p></div></div>
+    </section>
+
+    <section class="page" id="page-lures"><div class="section-heading"><div><span class="eyebrow">LURE LIBRARY</span><h2>拟饵图鉴</h2></div><span class="step-count" id="lureShown"></span></div><div class="search-row"><input id="lureSearch" type="search" placeholder="搜饵型：米诺、亮片、雷蛙…"><select id="lureFilter"><option value="all">全部水层</option><option value="surface">水面</option><option value="shallow">浅层</option><option value="mid">中层</option><option value="deep">深层 / 底层</option></select></div><div id="lureGrid" class="library-grid"></div></section>
+
+    <section class="page" id="page-fish"><div class="section-heading"><div><span class="eyebrow">SPECIES INDEX</span><h2>常见目标鱼</h2></div><span class="step-count" id="fishShown"></span></div><div class="search-row"><input id="fishSearch" type="search" placeholder="搜鱼名：翘嘴、鳜鱼、海鲈…"><select id="fishGroup"><option value="all">全部水域</option><option value="淡水">淡水</option><option value="海水">海水 / 咸淡水</option></select><select id="fishRegion" aria-label="按常见区域筛选"><option value="all">全部区域</option><option value="south">南方常见</option><option value="north">北方常见</option><option value="both">南北均有</option><option value="cold">冷水 / 管理水域</option></select></div><div id="fishGrid" class="fish-grid"></div><p class="small-note">已按南方、北方及南北均有的常见路亚淡水目标鱼标注区域。区域仅供参考，鱼种分布会随水系、放流和管理水域而变化；出钓前请确认当地鱼种、禁渔期和保护规定。</p></section>
+
+    <section class="page" id="page-rigs"><div class="section-heading"><div><span class="eyebrow">RIG QUICK LOOK</span><h2>钓组速查</h2></div><span class="step-count">12 RIGS</span></div><p class="intro">先按障碍和目标水层挑钓组。线径、铅重根据目标鱼、流速与竿线承重调整。</p><div id="rigGrid" class="rig-grid"></div></section>
+
+    <section class="page" id="page-map">
+      <div class="section-heading"><div><span class="eyebrow">SPOT FINDER</span><h2>钓点地图</h2></div><span class="step-count">MAP / 选点</span></div>
+      <p class="intro">按水域类型和目标鱼筛选钓点，点击地图标记查看水下结构、交通与建议时段。可搜索城市、定位附近水域，也可以标记自己的常去钓点。</p>
+      <div data-fishing-map data-basemap="amap" data-spots="./fishing-spots.json"></div>
+      <p class="small-note">地图底图和城市搜索需要联网；定位仅在你主动点击“定位”并允许浏览器访问位置后使用。地图中的彩色标记是示例钓点，坐标仅为水域大致位置（约数公里误差），不能作为精确导航或可垂钓保证。请出钓前核实岸线、开放情况、禁渔期和安全条件。你添加的钓点只保存在当前浏览器，可在地图的“底图”面板导入或导出备份。</p>
+    </section>
+
+    <section class="source-box"><span class="eyebrow">使用说明</span><p>本工具根据常见拟饵工作水层、目标鱼摄食方式和现场条件给出启发式建议。不同品牌的下潜深度、重量与动作差异明显，具体参数以产品标注为准。气压、温度等单项条件不能独立预测鱼获；请现场观察饵鱼、结构与水流并及时调整。</p><details><summary>参考资料与编写依据</summary><ul><li><a href="https://101.fishing/lures" target="_blank" rel="noreferrer">LURE 101：拟饵与钓组分类</a></li><li><a href="https://101.fishing/species" target="_blank" rel="noreferrer">LURE 101：常见路亚对象鱼</a></li><li><a href="https://www.mass.gov/info-details/bass-fishing-tips" target="_blank" rel="noreferrer">Mass.gov：黑鲈天气与水层建议</a></li><li><a href="https://secure.in.gov/dnr/fish-and-wildlife/education-programs/learn-to-fish/fishing-tips-and-videos/fishing-tips-when-and-where/" target="_blank" rel="noreferrer">Indiana DNR：风与水色的现场观察</a></li><li><a href="https://yyj.moa.gov.cn/scyz/201904/t20190428_6246986.htm" target="_blank" rel="noreferrer">农业农村部：新疆白斑狗鱼养殖与地域信息</a></li><li><a href="https://nynct.xinjiang.gov.cn/xjnynct/c113577/202309/f521eae462144ca2a13fd3fc2919370e.shtml" target="_blank" rel="noreferrer">新疆农业农村厅：额尔齐斯河流域鱼类资源</a></li><li><a href="https://www.schinafish.cn/cn/article/pdf/preview/10.12131/20190231.pdf" target="_blank" rel="noreferrer">《南方水产科学》：赤眼鳟分布与生态资料</a></li><li><a href="https://open-meteo.com/en/docs/geocoding-api" target="_blank" rel="noreferrer">Open-Meteo：城市地名检索说明</a></li></ul></details><details><summary>拟饵照片来源与顺序</summary><p>图鉴照片由用户上传，按收到的 1–23 顺序对应 23 种拟饵；选饵建议同步显示同一张对应照片。</p></details></section>
+  </main>
+
+  <footer><div><div class="footer-brand">野路指南 <span>· 把每一竿抛得更有依据</span></div><details class="install-help"><summary>添加到手机主屏幕</summary><p>iPhone：用 Safari 打开网站，点“分享”→“添加到主屏幕”。安卓：用 Chrome 打开，点菜单 →“安装应用”或“添加到主屏幕”。离线缓存需首次联网打开。</p></details></div><span>适配 iOS · Android</span></footer>
+  <nav class="mobile-nav" aria-label="底部导航"><button data-page="recommend" class="active"><span>⌖</span>选饵</button><button data-page="lures"><span>◒</span>拟饵</button><button data-page="fish"><span>♧</span>鱼种</button><button data-page="rigs"><span>⌁</span>钓组</button><button data-page="map"><span>⚑</span>地图</button></nav>
+  <script src="app.js?v=11"></script>
+  <script src="fishing-map.js?v=5"></script>
+</body>
+</html>
