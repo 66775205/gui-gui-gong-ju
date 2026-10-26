@@ -1,0 +1,5 @@
+const CACHE='野路指南-v25';const FILES=['./','./index.html','./style.css?v=15','./app.js?v=11','./fishing-map.css?v=1','./fishing-map.js?v=5','./fishing-spots.json','./manifest.webmanifest','./icon.svg','./hero-fisher.jpg','./logo-hupao-white.png',...Array.from({length:23},(_,i)=>`./lure-photos/${String(i+1).padStart(2,'0')}.jpg`)];
+self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting())));
+self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
+const BYPASS=/(tile\.openstreetmap\.org|tile\.opentopomap\.org|autonavi\.com|arcgisonline\.com|open-meteo\.com)/i;
+self.addEventListener('fetch',e=>{const req=e.request;if(req.method!=='GET'||BYPASS.test(req.url))return;e.respondWith(caches.match(req).then(hit=>hit||fetch(req).then(res=>{if(res.ok&&new URL(req.url).origin===self.location.origin){const copy=res.clone();caches.open(CACHE).then(c=>c.put(req,copy));}return res;}).catch(()=>caches.match('./index.html'))));});
