@@ -251,25 +251,7 @@ function buildFishingAdvice({hourly,idx,marine,tide,desc,wind,temp,code,rainNow}
  const chips=candidates.slice(0,3).map(name=>fish.some(f=>f.name===name)?`<button type="button" class="fish-chip" data-species="${safeText(name)}">${safeText(name)} ↗</button>`:`<span class="fish-chip static">${safeText(name)}</span>`).join('');
  return`<div class="analysis-top"><div><span class="eyebrow">FISHING WINDOW</span><h4>适钓评估</h4></div><div class="fishing-grade ${storm||score<35?'poor':score<58?'fair':score<78?'good':'best'}"><strong>${grade}</strong><span>${score} / 100</span></div></div><p class="analysis-note">按天气、风雨${water==='coast'?'与潮浪趋势':'与所选水域'}做的启发式参考，不代表鱼获保证。</p><ul class="analysis-reasons">${reasons.slice(0,3).map(s=>`<li>${safeText(s)}</li>`).join('')}</ul><div class="species-suggest"><span>可优先考虑</span><div>${chips}</div></div>${storm?'<p class="safety-alert">雷雨、强风或突发涨水时请停止作钓，遵守当地禁钓与海岸安全提示。</p>':''}`;
 }
-let installPrompt;
-const installBtn=$('#installBtn');
-const installGuide=$('#installGuide');
-function showInstallGuide(){installGuide.hidden=false;installBtn.setAttribute('aria-expanded','true');$('#installGuideClose').focus();}
-function hideInstallGuide(){installGuide.hidden=true;installBtn.setAttribute('aria-expanded','false');installBtn.focus();}
-window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;});
-window.addEventListener('appinstalled',()=>{installPrompt=null;installBtn.hidden=true;installGuide.hidden=true;});
-installBtn.addEventListener('click',async()=>{
-  if(!installPrompt){showInstallGuide();return;}
-  const prompt=installPrompt;installPrompt=null;
-  try{
-    await prompt.prompt();
-    const choice=await prompt.userChoice;
-    if(choice?.outcome==='accepted'){installBtn.hidden=true;installGuide.hidden=true;}
-    else showInstallGuide();
-  }catch(_){showInstallGuide();}
-});
-$('#installGuideClose').addEventListener('click',hideInstallGuide);
-if(window.matchMedia('(display-mode: standalone)').matches||navigator.standalone)installBtn.hidden=true;
+let installPrompt;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;$('#installBtn').hidden=false;});$('#installBtn').addEventListener('click',async()=>{if(installPrompt){installPrompt.prompt();installPrompt=null;$('#installBtn').hidden=true;}});
 init();
 
 /* 钓点地图与天气、选饵建议联动。 */
