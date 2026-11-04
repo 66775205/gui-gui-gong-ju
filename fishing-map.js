@@ -1,5 +1,5 @@
 /*!
- * 野路指南 · 钓点地图模块  fishing-map.js  v1.0.4
+ * 野路指南 · 钓点地图模块  fishing-map.js  v1.1.0
  * ---------------------------------------------------------------
  * 零依赖（不需要 Leaflet / 不需要 npm / 不需要 Key），单个文件即可运行。
  * 内置瓦片引擎 + 高德 GCJ-02 与 OSM WGS-84 双坐标系自动纠偏（国内地图最容易错的坑）。
@@ -10,7 +10,7 @@
 (function () {
   'use strict';
 
-  var VERSION = '1.0.4';
+  var VERSION = '1.1.0';
   var TILE = 256;
   var MAXLAT = 85.05112878;
   /* 用固定屏幕像素比例拖图，缩放等级不改变手感；低于 1 可减少过冲。 */
@@ -369,7 +369,7 @@
         '<div class="fm-bar">' +
           '<div class="fm-search">' +
             '<input class="fm-input" type="search" autocomplete="off" spellcheck="false" ' +
-              'placeholder="搜索城市、湖库或钓点名" aria-label="搜索地点或钓点">' +
+              'placeholder="搜地名、河流、水库或钓点" aria-label="搜索地名、河流、水库或钓点">' +
           '</div>' +
           '<button class="fm-btn ghost" data-act="locate" title="定位到我"><i>⌖</i><span class="lbl">定位</span></button>' +
           '<button class="fm-btn ghost" data-act="layers" title="切换底图"><i>▤</i><span class="lbl">底图</span></button>' +
@@ -694,6 +694,13 @@
         self.marksEl.appendChild(b);
         self.marks.push({ el: b, lat: s.lat, lng: s.lng, id: s.id, x: p.x, y: p.y });
       }
+      if (this.searchPin) {
+        var found = this.searchPin, marker = document.createElement('div');
+        marker.className = 'fm-search-pin';
+        marker.innerHTML = '<span class="fm-search-pin-dot"></span><span class="fm-search-pin-label">' + esc(found.name) + '</span>';
+        this.marksEl.appendChild(marker);
+        this.marks.push({ el: marker, lat: found.lat, lng: found.lng });
+      }
       this.el.classList.toggle('labels', this.zoom >= 10);
     },
 
@@ -816,7 +823,7 @@
 
         if (chip) { self.setFilter(chip.dataset.filter); return; }
         if (layer) { self.setBasemap(layer.dataset.bm); return; }
-        if (pin) { if (self._lastDragMoved < 6) self.selectSpot(pin.dataset.id); return; }
+        if (pin) { if (pin.dataset.id && self._lastDragMoved < 6) self.selectSpot(pin.dataset.id); return; }
         if (!actEl) {
           if (self.picking) self.applyPick(e);
           return;
@@ -1019,6 +1026,10 @@
       var self = this;
       q = String(q || '').trim();
       if (!q) { this.closeList(); return; }
+      this._searchSeq = (this._searchSeq || 0) + 1;
+      var seq = this._searchSeq;
+      clearTimeout(this._searchTimer);
+      if (this._searchAbort) this._searchAbort.abort();
       var lower = q.toLowerCase();
       var local = this.spots.filter(function (s) {
         return (s.name + ' ' + s.region + ' ' + (s.fish || []).join(' ') + ' ' + s.structure)
@@ -1033,29 +1044,86 @@
           '<span class="s">' + esc(s.region || (fmt(s.lat) + ',' + fmt(s.lng))) + '</span></button>';
       }).join('');
 
-      this.showList(rows + '<div class="fm-list-empty">正在搜索城市与水域…</div>');
-
-      clearTimeout(this._searchTimer);
+      if (q.length < 2) {
+        this.showList(rows + '<div class="fm-list-empty">再输入一个字，可搜索全国地名、河流和水库。</div>');
+        return;
+      }
+      function showPlaces(places) {
+        if (seq !== self._searchSeq || self.inputEl.value.trim() !== q) return;
+        var found = places.map(function (p) {
+          return '<button class="fm-list-item" data-lat="' + p.lat + '" data-lng="' + p.lng +
+            '" data-name="' + esc(p.name) + '" data-zoom="' + p.zoom + '">' +
+            '<span class="k">' + esc(p.kind) + '</span><span class="t">' + esc(p.name) + '</span>' +
+            '<span class="s">' + esc(p.region) + '</span></button>';
+        }).join('');
+        self.showList(rows + (rows && found ? '<div class="fm-list-empty fm-list-heading">地图搜索结果</div>' : '') + found +
+          (places.some(function (p) { return p.source === 'osm'; }) ? '<div class="fm-search-credit">地点数据 © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap 贡献者</a> · Photon</div>' : '') ||
+          '<div class="fm-list-empty">没有找到「' + esc(q) + '」。可加上省市名称再试；公开地图未收录的水域暂时无法搜到。</div>');
+      }
+      this.showList(rows + '<div class="fm-list-empty">正在搜索中国地名、河流和水库…</div>');
+      this._placeCache = this._placeCache || new Map();
+      if (this._placeCache.has(q)) { showPlaces(this._placeCache.get(q)); return; }
       this._searchTimer = setTimeout(function () {
-        var url = 'https://geocoding-api.open-meteo.com/v1/search?name=' + encodeURIComponent(q) +
-          '&count=8&language=zh&format=json&countryCode=CN';
-        fetch(url).then(function (r) { return r.ok ? r.json() : null; }).then(function (data) {
-          var res = (data && data.results) || [];
-          var city = res.map(function (p) {
-            return '<button class="fm-list-item" data-lat="' + p.latitude + '" data-lng="' + p.longitude +
-              '" data-name="' + esc(p.name) + '">' +
-              '<span class="k">城市</span><span class="t">' + esc(p.name) + '</span>' +
-              '<span class="s">' + esc([p.admin1, p.country].filter(Boolean).join(' · ')) + '</span></button>';
-          }).join('');
-          if (!rows && !city) {
-            self.showList('<div class="fm-list-empty">没有找到「' + esc(q) + '」，试试其它写法或直接在地图上点选。</div>');
-          } else {
-            self.showList(rows + (rows && city ? '<div class="fm-list-empty" style="padding:6px 11px">城市与水域</div>' : '') + city);
-          }
-        }).catch(function () {
-          if (!rows) self.showList('<div class="fm-list-empty">搜索服务暂时连不上；可以先拖动地图或点「定位」。</div>');
+        var url = new URL('https://photon.komoot.io/api/');
+        url.searchParams.set('q', q);
+        url.searchParams.set('limit', '20');
+        ['CN', 'HK', 'MO', 'TW'].forEach(function (code) { url.searchParams.append('countrycode', code); });
+        var controller = new AbortController();
+        self._searchAbort = controller;
+        function cityFallback(serviceFailed) {
+          var cityUrl = 'https://geocoding-api.open-meteo.com/v1/search?name=' + encodeURIComponent(q) +
+            '&count=8&language=zh&format=json&countryCode=CN';
+          fetch(cityUrl, { signal: controller.signal }).then(function (r) {
+            if (!r.ok) throw new Error('城市搜索暂不可用');
+            return r.json();
+          }).then(function (data) {
+            var cities = ((data && data.results) || []).filter(function (p) {
+              return isFinite(+p.latitude) && isFinite(+p.longitude);
+            }).map(function (p) {
+              return { name: p.name, kind: '地名', region: [p.admin1, p.admin2].filter(Boolean).join(' · '),
+                lat: +p.latitude, lng: +p.longitude, zoom: 11 };
+            });
+            if (cities.length) { self._placeCache.set(q, cities); showPlaces(cities); }
+            else if (serviceFailed && seq === self._searchSeq && self.inputEl.value.trim() === q)
+              self.showList(rows + '<div class="fm-list-empty">地图搜索暂时连不上；可先拖动地图或点「定位」。</div>');
+            else showPlaces([]);
+          }).catch(function () {
+            if (seq === self._searchSeq && self.inputEl.value.trim() === q)
+              self.showList(rows + '<div class="fm-list-empty">地图搜索暂时连不上；可先拖动地图或点「定位」。</div>');
+          });
+        }
+        fetch(url.toString(), { signal: controller.signal }).then(function (r) {
+          if (!r.ok) throw new Error('搜索服务返回 ' + r.status);
+          return r.json();
+        }).then(function (data) {
+          var seen = new Set();
+          var places = ((data && data.features) || []).map(function (f) {
+            var p = f.properties || {}, c = (f.geometry || {}).coordinates || [];
+            var lng = +c[0], lat = +c[1], name = String(p.name || '').trim();
+            if (!name || !isFinite(lat) || !isFinite(lng) || lat < 17 || lat > 55 || lng < 73 || lng > 136 ||
+                ['CN', 'HK', 'MO', 'TW'].indexOf(p.countrycode) < 0) return null;
+            var key = p.osm_key, value = p.osm_value, kind = '地点', zoom = 11;
+            if (value === 'reservoir') { kind = '水库'; zoom = 11; }
+            else if (value === 'river' || key === 'waterway' && value === 'canal') { kind = '河流'; zoom = 8; }
+            else if (value === 'stream') { kind = '溪流'; zoom = 12; }
+            else if (value === 'lake' || key === 'natural' && value === 'water') { kind = '湖泊'; zoom = 11; }
+            else if (key === 'place' || key === 'boundary') kind = '地名';
+            var region = [p.state, p.city || p.county || p.district].filter(function (part, i, all) {
+              return part && part !== name && all.indexOf(part) === i;
+            }).join(' · ');
+            var dedupe = name + '|' + kind + '|' + region;
+            if (seen.has(dedupe)) return null;
+            seen.add(dedupe);
+            return { name: name, kind: kind, region: region, lat: lat, lng: lng, zoom: zoom, source: 'osm',
+              score: (name === q ? 100 : name.indexOf(q) >= 0 ? 60 : 0) +
+                (kind === '水库' || kind === '河流' || kind === '湖泊' || kind === '溪流' ? 20 : kind === '地名' ? 10 : 0) };
+          }).filter(Boolean).sort(function (a, b) { return b.score - a.score; }).slice(0, 10);
+          if (!places.length && /[市区县镇]$/.test(q)) cityFallback(false);
+          else { self._placeCache.set(q, places); showPlaces(places); }
+        }).catch(function (err) {
+          if (err && err.name !== 'AbortError' && seq === self._searchSeq) cityFallback(true);
         });
-      }, 320);
+      }, 450);
     },
 
     showList: function (html) {
@@ -1073,6 +1141,7 @@
             if (s) {
               self.closeList();
               self.inputEl.value = '';
+              self.searchPin = null;
               self.flyTo(s.lat, s.lng, Math.max(self.zoom, 13));
               setTimeout(function () { self.selectSpot(s.id); }, 430);
             }
@@ -1080,7 +1149,9 @@
             var lat = +b.dataset.lat, lng = +b.dataset.lng;
             self.closeList();
             self.inputEl.value = b.dataset.name;
-            self.flyTo(lat, lng, 11);
+            self.searchPin = { name: b.dataset.name, lat: lat, lng: lng };
+            self.renderMarks(true);
+            self.flyTo(lat, lng, +(b.dataset.zoom || 11));
           }
         });
       });
@@ -1088,6 +1159,8 @@
     closeList: function () {
       if (this.listEl) { this.listEl.remove(); this.listEl = null; }
       clearTimeout(this._searchTimer);
+      this._searchSeq = (this._searchSeq || 0) + 1;
+      if (this._searchAbort) { this._searchAbort.abort(); this._searchAbort = null; }
     },
 
     /* ---------- 6.10 详情卡 ---------- */
@@ -1169,7 +1242,8 @@
       if (!s) return;
       var detail = {
         lat: s.lat, lng: s.lng, name: s.name,
-        type: s.type, water: (TYPES[s.type] || TYPES.lake).water
+        type: s.type, water: (TYPES[s.type] || TYPES.lake).water,
+        demo: !!s.demo, mine: !!s.mine, region: s.region
       };
       var h = this.hooks();
       if (h && typeof h.showSpotWeather === 'function') {

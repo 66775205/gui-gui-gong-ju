@@ -130,6 +130,9 @@
 .fm-root.labels .fm-pin-label{display:block}
 .fm-pin.mine .fm-pin-body{border-style:dashed}
 .fm-pin.hide{display:none}
+.fm-search-pin{position:absolute;left:0;top:0;pointer-events:none;z-index:4}
+.fm-search-pin-dot{position:absolute;left:-8px;top:-8px;width:16px;height:16px;border:3px solid #fff;border-radius:50%;background:#df7647;box-shadow:0 0 0 3px rgba(223,118,71,.35),0 2px 8px rgba(16,44,42,.3)}
+.fm-search-pin-label{position:absolute;left:12px;top:-14px;max-width:180px;padding:5px 8px;background:#fffefa;border:1px solid #df7647;color:#102c2a;font:700 11px/1.25 var(--fm-sans);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 2px 8px rgba(16,44,42,.14)}
 
 /* 聚合气泡 */
 .fm-cluster{
@@ -234,9 +237,12 @@
 .fm-list-item:hover,.fm-list-item:focus{background:#eef3e6;outline:0}
 .fm-list-item:last-child{border-bottom:0}
 .fm-list-item .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.fm-list-item .s{font:9px var(--fm-mono);color:#8b978d;white-space:nowrap}
+.fm-list-item .s{font:9px var(--fm-mono);color:#8b978d;white-space:nowrap;max-width:38%;overflow:hidden;text-overflow:ellipsis}
 .fm-list-item .k{font:9px var(--fm-mono);color:#5c7a4f;border:1px solid #cfe0c2;padding:2px 5px;white-space:nowrap}
 .fm-list-empty{padding:12px 11px;font:11px var(--fm-sans);color:#87938a}
+.fm-list-heading{padding:6px 11px;background:#f4f7ef;color:#657b64}
+.fm-search-credit{padding:6px 11px;color:#87938a;font:9px var(--fm-sans);background:#f8faf5}
+.fm-search-credit a{color:#5c7a4f}
 
 /* ---------- 底图选择 ---------- */
 .fm-panel{

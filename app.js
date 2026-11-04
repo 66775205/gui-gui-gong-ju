@@ -1,13 +1,13 @@
 const fish = [
-  {name:'翘嘴鲌',group:'淡水',habitat:'湖库 · 江河开阔水面',depth:['surface','mid'],lures:['minnow','pencil','vib','spoon'],tip:'追逐小鱼，留意炸水、明水与洄水湾；中上层搜索。'},
-  {name:'大口黑鲈（加州鲈）',group:'淡水',habitat:'湖库 · 池塘 · 水草边',depth:['shallow','mid','bottom'],lures:['crank','soft','spinnerbait','jerkbait','frog'],tip:'覆盖水草、岸边、倒木与落差；按结构选择防挂钓组。'},
+  {name:'翘嘴鲌',group:'淡水',habitat:'湖库 · 江河开阔水面',depth:['surface','mid'],lures:['minnow','pencil','walkingdog','vib','spoon'],tip:'追逐小鱼，留意炸水、明水与洄水湾；中上层搜索。'},
+  {name:'大口黑鲈（加州鲈）',group:'淡水',habitat:'湖库 · 池塘 · 水草边',depth:['surface','shallow','mid','bottom'],lures:['crank','soft','spinnerbait','jerkbait','frog','walkingdog'],tip:'覆盖水草、岸边、倒木与落差；按结构选择防挂钓组。'},
   {name:'鳜鱼',group:'淡水',habitat:'江河 · 水库 · 石结构',depth:['bottom','mid'],lures:['soft','jighead','vib','minnow'],tip:'伏击型鱼，重点搜石坎、桥墩、乱石底与深浅交界。'},
   {name:'乌鳢（黑鱼）',group:'淡水',habitat:'池塘 · 湖库浅滩水草区',depth:['surface','shallow'],lures:['frog','soft','buzzbait'],tip:'暖季常巡水草与障碍边；雷蛙贴草洞、草边慢搜。'},
-  {name:'马口鱼',group:'淡水',habitat:'溪流 · 山涧浅滩',depth:['surface','shallow'],lures:['spoon','minnow','spinner'],tip:'逆流抛投或横切水流，轻饵快速搜索浅滩与流边。'},
+  {name:'马口鱼',group:'淡水',habitat:'溪流 · 山涧浅滩',depth:['surface','shallow'],lures:['spoon','minnow','spinner','walkingdog'],tip:'逆流抛投或横切水流，轻饵快速搜索浅滩与流边。'},
   {name:'宽鳍鱲（溪哥）',group:'淡水',habitat:'溪流 · 山涧',depth:['surface','shallow'],lures:['minnow','spoon','spinner'],tip:'观察水面昆虫与小鱼，使用轻量小型拟饵顺流控线。'},
   {name:'红鳍原鲌（青梢）',group:'淡水',habitat:'湖库 · 江河',depth:['surface','mid'],lures:['minnow','spoon','vib'],tip:'常在中上层追饵鱼，可用小米诺或亮片搜索开阔水面。'},
   {name:'蒙古鲌',group:'淡水',habitat:'湖库 · 江河',depth:['surface','mid'],lures:['minnow','vib','spoon'],tip:'掠食小鱼，水面有追食时先试米诺和小型金属饵。'},
-  {name:'赤眼鳟（红眼）',group:'淡水',habitat:'东部河湖 · 江河缓流 · 水库',depth:['surface','shallow','mid'],lures:['minnow','spoon','spinner','micro'],tip:'东部多水系可见的杂食性鱼；试小米诺、轻亮片或微物，沿缓流、浅滩与饵鱼活动处轻收。'},
+  {name:'赤眼鳟（红眼）',group:'淡水',habitat:'东部河湖 · 江河缓流 · 水库',depth:['surface','shallow','mid'],lures:['minnow','spoon','spinner','micro','walkingdog'],tip:'东部多水系可见的杂食性鱼；试小米诺、轻亮片或微物，沿缓流、浅滩与饵鱼活动处轻收。'},
   {name:'鲶鱼',group:'淡水',habitat:'江河 · 湖库 · 夜间近岸',depth:['bottom','deep'],lures:['soft','jighead','vib','spinner'],tip:'常贴底或沿结构活动；低光时可用有振动的饵慢速搜索。'},
   {name:'黄颡鱼',group:'淡水',habitat:'江河缓流 · 湖库近底',depth:['bottom'],lures:['soft','jighead'],tip:'主要贴底摄食，轻铅软虫沿石缝、岸坎底部慢拖。'},
   {name:'鳡鱼',group:'淡水',habitat:'大江大河 · 水库开阔水面',depth:['surface','mid'],lures:['minnow','pencil','spoon','vib'],tip:'大型掠食鱼，追饵时可用较大米诺或铁板远投搜索。'},
@@ -49,6 +49,7 @@ const lures = [
  {id:'minnow',name:'米诺',en:'MINNOW',icon:'◢',depth:['shallow','mid'],waters:['lake','river','coast','stream'],fish:['翘嘴鲌','大口黑鲈（加州鲈）','鳜鱼','马口鱼','赤眼鳟（红眼）','鲈鱼（海鲈）'],method:'匀速收线起步；无口时试“抽两下、停一拍”，悬停时留意追咬。',desc:'仿小鱼的硬饵，选浮水、悬停或沉水款控制水层。',color:'银白 / 透明',season:['spring','autumn']},
  {id:'jerkbait',name:'悬停米诺',en:'SUSPENDING JERKBAIT',icon:'⌁',depth:['shallow','mid'],waters:['lake','pond','coast'],fish:['大口黑鲈（加州鲈）','狗鱼','梭鲈（狗鱼鲈）'],method:'先收线到目标层，再短抽停顿；冷水或鱼追不咬时延长停顿。',desc:'抽停型鱼形硬饵，悬停时间和深度依型号而异。',color:'自然小鱼色',season:['spring','winter']},
  {id:'pencil',name:'铅笔',en:'TOPWATER PENCIL',icon:'〰',depth:['surface'],waters:['lake','river','coast'],fish:['翘嘴鲌','乌鳢（黑鱼）','鲈鱼（海鲈）','鳡鱼'],method:'连续轻抽让饵左右摆动；鱼跟不咬时放慢节奏并加停顿。',desc:'水面之字形搜索饵，适合开阔水面与追食窗口。',color:'自然 / 高对比',season:['summer','autumn']},
+ {id:'walkingdog',name:'之字狗',en:'WALK-THE-DOG',icon:'〰',depth:['surface'],waters:['lake','pond','river','stream'],fish:['翘嘴鲌','大口黑鲈（加州鲈）','马口鱼','赤眼鳟（红眼）'],method:'落水后稍停，低竿尖连续短抽并及时收余线，让饵在水面左右走出之字；有鱼跟随时放慢并停顿。',desc:'小型无舌板水面硬饵，靠竿尖短抽走出之字路线，适合平静水面和浅滩。',color:'银色 / 自然小鱼色',season:['summer','autumn']},
  {id:'popper',name:'波爬 / 波扒',en:'POPPER',icon:'◉',depth:['surface'],waters:['lake','pond','coast'],fish:['大口黑鲈（加州鲈）','翘嘴鲌'],method:'短促点抽制造水花，停一两秒观察；风浪大时效果会受影响。',desc:'杯口造水声与水花，适合水面有鱼但需要停留诱鱼时。',color:'白色 / 仿饵鱼',season:['summer']},
  {id:'frog',name:'雷蛙',en:'HOLLOW-BODY FROG',icon:'♧',depth:['surface','shallow'],waters:['lake','pond'],fish:['乌鳢（黑鱼）','大口黑鲈（加州鲈）'],method:'沿草边、草洞慢走；炸水后稍等线绷紧再扬竿。',desc:'浮水防挂饵，适合水草覆盖和表层障碍。',color:'蛙色 / 黑色',season:['summer']},
  {id:'crank',name:'摇滚小胖子',en:'CRANKBAIT',icon:'◒',depth:['shallow','mid','deep'],waters:['lake','pond','river'],fish:['大口黑鲈（加州鲈）','黑鲷'],method:'稳定收线让舌板下潜，尽量擦过石底或障碍后继续收线。',desc:'舌板控制下潜，依型号可覆盖浅到深层。',color:'浑水用亮色；清水用自然色',season:['spring','autumn']},
@@ -56,7 +57,7 @@ const lures = [
  {id:'spoon',name:'勺型亮片',en:'SPOON',icon:'◖',depth:['shallow','mid'],waters:['river','stream','lake','coast'],fish:['马口鱼','宽鳍鱲（溪哥）','赤眼鳟（红眼）','虹鳟','河鲈'],method:'上游或横流抛投，控制收线速度让亮片稳定摆动。',desc:'反光摆动的金属拟饵，轻量款适合溪流和小型鱼。',color:'晴天银色；阴天金色',season:['spring','autumn']},
  {id:'spinner',name:'旋转亮片',en:'INLINE SPINNER',icon:'✳',depth:['shallow','mid'],waters:['stream','river','lake'],fish:['马口鱼','宽鳍鱲（溪哥）','赤眼鳟（红眼）','虹鳟'],method:'均速收线维持叶片转动，沿流边或水草外缘扫过。',desc:'叶片闪光并产生振动，小鱼和流水环境的搜索饵。',color:'银 / 金',season:['spring','summer']},
  {id:'spinnerbait',name:'复合旋转亮片',en:'SPINNERBAIT',icon:'✣',depth:['shallow','mid'],waters:['lake','pond'],fish:['大口黑鲈（加州鲈）','狗鱼'],method:'贴水草边匀收，经过障碍时稍放慢；可用竿尖改变泳层。',desc:'单钩防挂结构，适合水草边和障碍区搜索。',color:'白色 / 查特鲁斯',season:['spring','autumn']},
- {id:'buzzbait',name:'蜂鸣饵',en:'BUZZBAIT',icon:'✴',depth:['surface'],waters:['lake','pond'],fish:['乌鳢（黑鱼）','大口黑鲈（加州鲈）'],method:'落水后快速起动保持叶片出水，沿草边持续搜索。',desc:'表层噪音搜索饵，适合鱼活跃并能追击水面的时段。',color:'黑 / 白',season:['summer']},
+ {id:'buzzbait',name:'水面拖拉机',en:'BUZZBAIT',icon:'✴',depth:['surface'],waters:['lake','pond'],fish:['乌鳢（黑鱼）','大口黑鲈（加州鲈）'],method:'落水后快速起动保持叶片出水，沿草边持续搜索。',desc:'表层噪音搜索饵，适合鱼活跃并能追击水面的时段。',color:'黑 / 白',season:['summer']},
  {id:'soft',name:'软虫 / 软饵',en:'SOFT PLASTIC',icon:'∿',depth:['mid','deep','bottom'],waters:['lake','river','pond','coast'],fish:['鳜鱼','大口黑鲈（加州鲈）','鲶鱼','黑鲷','石斑鱼'],method:'沉底后轻抖、拖动或小跳；让软饵贴近结构并保持触底感。',desc:'形态和尺寸多样，可搭配多种钩型与铅重。',color:'清水自然色；浑水高对比',season:['spring','summer','autumn','winter']},
  {id:'jighead',name:'铅头钩 + 软饵',en:'JIGHEAD',icon:'⊙',depth:['mid','deep','bottom'],waters:['river','lake','coast'],fish:['鳜鱼','黄颡鱼','鲶鱼','石斑鱼'],method:'抛投沉底后扬竿小跳，慢收并保持触底；重铅应对急流和深水。',desc:'结构简单、搜索范围广的通用软饵组合。',color:'自然小鱼 / 虾色',season:['spring','autumn']},
  {id:'metaljig',name:'铁板 / 金属饵',en:'METAL JIG',icon:'◆',depth:['mid','deep','bottom'],waters:['coast','river','lake'],fish:['鲣鱼','马鲛（鲅鱼）','带鱼','鲷类（真鲷等）','石斑鱼'],method:'抛投后数秒控制泳层，快速收或抽停；船钓可垂直提放。',desc:'高比重远投或垂直搜索，重量按风、流和水深选。',color:'银色 / 镭射',season:['summer','autumn']},
@@ -79,15 +80,16 @@ const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const depthNames={surface:'水面',shallow:'浅层',mid:'中层',deep:'深层',bottom:'贴底'};
 const lureMap=Object.fromEntries(lures.map(x=>[x.id,x]));
 function lureArt(l){
- const order={minnow:1,jerkbait:2,pencil:3,popper:4,frog:5,crank:6,vib:7,spoon:8,spinner:9,spinnerbait:10,buzzbait:11,soft:12,jighead:13,metaljig:14,micro:15,blade:16,swimbait:17,tailspin:18,spintail:19,wacky:20,crappie:21,swimbait_soft:22,frog_soft:23};
+ const order={minnow:1,jerkbait:2,pencil:3,popper:4,frog:5,crank:6,vib:7,spoon:8,spinner:9,spinnerbait:10,buzzbait:11,soft:12,jighead:13,metaljig:14,micro:15,blade:16,swimbait:17,tailspin:18,spintail:19,wacky:20,crappie:21,swimbait_soft:22,frog_soft:23,walkingdog:24};
  const number=String(order[l.id]||1).padStart(2,'0');
- return `<img class="lure-photo" src="./lure-photos/${number}.jpg" alt="${l.name}实物照片" loading="lazy" decoding="async" title="${l.name} · 用户上传照片">`;
+ const src=`./lure-photos-clean/${number}.png`;
+ return `<img class="lure-photo" src="${src}" alt="${l.name}实物照片" loading="lazy" decoding="async" title="${l.name} · 用户上传照片">`;
 }
 function init(){
  $('#fishSelect').innerHTML=fish.map((f,i)=>`<option value="${i}">${f.name}</option>`).join('');
  $('#fishCount').textContent=fish.length;$('#lureCount').textContent=lures.length;
  renderLures();renderFish();renderRigs();recommend();
- $$('.tab,.mobile-nav button').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
+ $$('.tab,.mobile-nav button,.hero-shortcut').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
  ['fishSelect','weatherSelect','waterSelect','depthSelect','claritySelect','seasonSelect'].forEach(id=>$('#'+id).addEventListener('change',recommend));
  $('#recommendBtn').addEventListener('click',recommend);
  $('#lureSearch').addEventListener('input',renderLures);$('#lureFilter').addEventListener('change',renderLures);
@@ -96,12 +98,19 @@ function init(){
  $('#waterSelect').addEventListener('change',()=>{if(forecastLocation)loadFishingForecast(forecastLocation);});
  if('serviceWorker' in navigator && location.protocol!=='file:') navigator.serviceWorker.register('./sw.js').catch(()=>{});
 }
-function showPage(page){$$('.page').forEach(p=>p.classList.toggle('active',p.id==='page-'+page));$$('[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===page));window.scrollTo({top:document.querySelector('.tabs').offsetTop,behavior:'smooth'});}
+function showPage(page){
+ const target=document.getElementById('page-'+page);
+ if(!target)return;
+ $$('.page').forEach(p=>p.classList.toggle('active',p===target));
+ $$('[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===page));
+ const navOffset=window.matchMedia('(max-width:760px)').matches?0:78;
+ window.scrollTo({top:target.getBoundingClientRect().top+window.scrollY-navOffset,behavior:'smooth'});
+}
 function recommend(){
  const f=fish[+$('#fishSelect').value]||fish[0],weather=$('#weatherSelect').value,water=$('#waterSelect').value,depth=$('#depthSelect').value,clarity=$('#claritySelect').value,season=$('#seasonSelect').value;
  let ranked=lures.map(l=>{let s=f.lures.includes(l.id)?6:0;if(l.depth.includes(depth))s+=4;else if((depth==='bottom'||depth==='deep')&&l.depth.includes('mid'))s+=1;if(l.waters.includes(water))s+=2;if(l.season.includes(season))s+=1;
   if(weather==='windy'&&['vib','spoon','metaljig','tailspin','spinnerbait'].includes(l.id))s+=2;
-  if((weather==='overcast'||weather==='cloudy')&&['pencil','popper','minnow','spinnerbait','buzzbait'].includes(l.id))s+=1;
+  if((weather==='overcast'||weather==='cloudy')&&['pencil','walkingdog','popper','minnow','spinnerbait','buzzbait'].includes(l.id))s+=1;
   if(weather==='sunny'&&['soft','jighead','crank','swimbait'].includes(l.id))s+=1;
   if(weather==='afterRain'&&['vib','spinner','spinnerbait','soft'].includes(l.id))s+=1;
   if(clarity==='stained'&&['vib','spinnerbait','crank','buzzbait','frog'].includes(l.id))s+=2;
@@ -118,57 +127,105 @@ function renderLures(){const q=$('#lureSearch').value.trim().toLowerCase(),d=$('
 function renderFish(){const q=$('#fishSearch').value.trim().toLowerCase(),g=$('#fishGroup').value,r=$('#fishRegion').value;const list=fish.filter(f=>{const region=fishRegions[f.name]||'both';return(g==='all'||f.group===g)&&(r==='all'||region===r)&&(!q||(f.name+f.habitat+f.tip+(fishRegionNames[region]||'')).toLowerCase().includes(q));});$('#fishShown').textContent=`${list.length} / ${fish.length}`;$('#fishGrid').innerHTML=list.map((f,i)=>{const region=fishRegions[f.name]||'both';return`<article class="fish-card" data-fish="${fish.indexOf(f)}"><span class="fish-no">${String(i+1).padStart(2,'0')} · ${f.group}</span><span class="fish-region">${fishRegionNames[region]}</span><h3>${f.name}</h3><p>${f.tip}</p><div class="habitat">${f.habitat}</div></article>`;}).join('')||'<p class="small-note">没有找到符合条件的鱼种。</p>';$$('.fish-card').forEach(c=>c.addEventListener('click',()=>{ $('#fishSelect').value=c.dataset.fish;showPage('recommend');recommend();}));}
 function renderRigs(){$('#rigGrid').innerHTML=rigs.map((r,i)=>`<article class="rig-card"><span class="rig-number">RIG / ${String(i+1).padStart(2,'0')}</span><h3>${r[0]}</h3><p>${r[1]}</p><span class="rig-use">${r[2]}</span></article>`).join('');}
 let forecastLocation=null;
+const chinaCountryCodes=new Set(['CN','HK','MO','TW']);
+const chinaCities=Array.isArray(window.CHINA_CITIES)?window.CHINA_CITIES:[];
+const chinaDistricts=Array.isArray(window.CHINA_DISTRICTS)?window.CHINA_DISTRICTS:[];
+const chinaPlaces=[...chinaCities,...chinaDistricts];
+const cityOptionLabel=city=>[city[0],city[2],city[1]].filter((name,index,names)=>name&&names.indexOf(name)===index).join(' · ');
+const cityByLabel=new Map(chinaPlaces.map(city=>[cityOptionLabel(city),city]));
+function withinChinaBounds(latitude,longitude){return Number.isFinite(latitude)&&Number.isFinite(longitude)&&latitude>=18&&latitude<=54&&longitude>=73&&longitude<=135.2;}
 const weatherText={0:'晴朗',1:'大部晴朗',2:'局部多云',3:'阴天',45:'有雾',48:'雾凇',51:'毛毛雨',53:'小雨',55:'中雨',56:'冻毛毛雨',57:'冻毛毛雨',61:'小雨',63:'中雨',65:'大雨',66:'冻雨',67:'冻雨',71:'小雪',73:'中雪',75:'大雪',77:'雪粒',80:'零星阵雨',81:'阵雨',82:'强阵雨',85:'阵雪',86:'强阵雪',95:'雷雨',96:'雷雨伴冰雹',99:'强雷雨伴冰雹'};
 const weatherGlyph={晴朗:'☀',大部晴朗:'☀',局部多云:'◐',阴天:'☁',有雾:'≋',雾凇:'≋',小雨:'☂',中雨:'☂',大雨:'☂',阵雨:'☂',零星阵雨:'☂',强阵雨:'☂',雷雨:'⚡',强雷雨:'⚡'};
 function initForecast(){
+ const cityList=$('#chinaCityList');
+ if(cityList)cityList.innerHTML=chinaPlaces.map(place=>`<option value="${safeText(cityOptionLabel(place))}"></option>`).join('');
+ setForecastStatus(`已收录 ${chinaCities.length} 个城市及 ${chinaDistricts.length} 个市辖区。输入市或区名称，或点击“定位”。`);
  $('#locationSearchBtn').addEventListener('click',searchFishingLocation);
  $('#locationInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();searchFishingLocation();}});
  $('#locateBtn').addEventListener('click',locateFishingLocation);
  $('#fishingAnalysis').addEventListener('click',e=>{const b=e.target.closest('[data-species]');if(!b)return;const i=fish.findIndex(f=>f.name===b.dataset.species);if(i>=0){$('#fishSelect').value=i;recommend();}});
- try{const saved=JSON.parse(localStorage.getItem('lureGuideWeatherLocation')||'null');if(saved&&Number.isFinite(saved.latitude)&&Number.isFinite(saved.longitude)){forecastLocation=saved;$('#locationInput').value=saved.name||'';loadFishingForecast(saved);}}catch{}
+ try{const saved=JSON.parse(localStorage.getItem('lureGuideWeatherLocation')||'null');if(saved&&chinaCountryCodes.has(saved.countryCode)){const first=(saved.name||'').split(' · ')[0];const match=chinaPlaces.find(place=>place[3]===saved.countryCode&&(place[0]===first||place[0].replace(/[市区]$/,'')===first)&&(saved.name||'').includes(place[1]));const label=saved.queryLabel|| (match?cityOptionLabel(match):'');if(cityByLabel.has(label)){$('#locationInput').value=label;searchFishingLocation();}else localStorage.removeItem('lureGuideWeatherLocation');}else if(saved)localStorage.removeItem('lureGuideWeatherLocation');}catch{}
 }
 function setForecastStatus(message,isError=false){const el=$('#forecastStatus');el.textContent=message;el.classList.toggle('error',isError);}
 function safeText(value){return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 async function searchFishingLocation(){
- const query=$('#locationInput').value.trim();if(!query){setForecastStatus('先输入城市或海边钓点名称。',true);$('#locationInput').focus();return;}
+ const query=$('#locationInput').value.trim();if(!query){setForecastStatus('先输入市或区名称。',true);$('#locationInput').focus();return;}
+ forecastLocation=null;
+ $('#forecastContent').hidden=true;
+ const cityMatches=chinaPlaces.filter(place=>place[0]===query||place[0].replace(/[市区]$/,'')===query);
+ const selectedCity=cityByLabel.get(query)||(cityMatches.length===1?cityMatches[0]:null);
+ if(!selectedCity){setForecastStatus(cityMatches.length?'有多个同名地区，请从下拉列表选带省市名称的那一项。':'仅支持市和市辖区，请从下拉列表选择地点。',true);return;}
+ const locationName=selectedCity?.[0]||query;
  setForecastStatus('正在查找地点…');$('#locationSearchBtn').disabled=true;
  const aliases={'厦门':'Xiamen','舟山':'Zhoushan','宁波':'Ningbo','福州':'Fuzhou','青岛':'Qingdao','大连':'Dalian','威海':'Weihai','烟台':'Yantai','汕头':'Shantou','深圳':'Shenzhen','广州':'Guangzhou','珠海':'Zhuhai','湛江':'Zhanjiang','北海':'Beihai','海口':'Haikou','三亚':'Sanya','上海':'Shanghai','天津':'Tianjin','丹东':'Dandong','秦皇岛':'Qinhuangdao','温州':'Wenzhou','连云港':'Lianyungang','台州':'Taizhou','香港':'Hong Kong','澳门':'Macau'};
- const normalized=query.replace(/市$/,'');const searchNames=[normalized,query,aliases[query]||aliases[normalized]].filter((v,i,a)=>v&&a.indexOf(v)===i);
+ const normalized=locationName.replace(/市$/,'');
+ const addressParts=[selectedCity[1],selectedCity[2],selectedCity[0]].filter(Boolean);
+ const specificPart=selectedCity[0];
+ const stripAdmin=name=>name.replace(/(?:特别行政区|自治区|自治州|自治县|自治旗|新区|街道|地区|市|县|区|镇|乡|旗|盟|省)$/,'');
+ const searchNames=[specificPart,stripAdmin(specificPart),normalized,aliases[locationName]||aliases[normalized]].filter(v=>v&&v.length>=2).filter((v,i,a)=>a.indexOf(v)===i);
  try{
-  let results=[];const countryCodes=['CN','HK','MO','TW'];
+  let results=[];const countryCodes=[selectedCity[3]];
   for(const countryCode of countryCodes){for(const name of searchNames){const url=`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(name)}&count=100&language=zh&format=json&countryCode=${countryCode}`;const res=await fetch(url);if(!res.ok)throw new Error('地点服务暂不可用');const data=await res.json();if(data.results?.length)results.push(...data.results);}}
-  const cityResults=results.filter(p=>/^(PPLC|PPLA\d*|PPL)$/.test(p.feature_code||'')&&!/(区|县|旗|街道|乡|镇)$/.test(p.name||''));
-  if(!cityResults.length)throw new Error('没找到这个城市，请输入市级城市名称再试。');
-  const featureRank={PPLC:0,PPLA:1,PPLA1:1,PPLA2:2,PPLA3:3,PPLA4:4,PPLA5:5,PPL:6};
-  cityResults.sort((a,b)=>{const exactA=Number(a.name===normalized||a.name===query),exactB=Number(b.name===normalized||b.name===query);return exactB-exactA||(featureRank[a.feature_code]??9)-(featureRank[b.feature_code]??9)||(b.population||0)-(a.population||0);});
-  const p=cityResults[0],parts=[p.name,p.admin1,p.country].filter((v,i,a)=>v&&a.indexOf(v)===i);forecastLocation={latitude:p.latitude,longitude:p.longitude,name:parts.join(' · ')};await loadFishingForecast(forecastLocation);
+  const placeResults=[...new Map(results.filter(p=>chinaCountryCodes.has(p.country_code)&&countryCodes.includes(p.country_code)&&/^(PPLC|PPLA\d*|PPL|PPLX|ADM\d+)$/.test(p.feature_code||'')).map(p=>[p.id,p])).values()];
+  if(!placeResults.length)throw new Error('地点服务没有收录这个市或区，请尝试其上一级城市。');
+  const featureRank={PPLA3:0,PPLA4:0,ADM3:1,ADM4:1,PPLA2:2,ADM2:2,PPLA1:3,PPLA:3,PPLC:4,PPL:5,PPLX:6};
+  const contextParts=addressParts.slice(0,-1).map(stripAdmin).filter(x=>x.length>=2);
+  const provinceKey=selectedCity[1].slice(0,2);
+  const parentKey=selectedCity[2]?stripAdmin(selectedCity[2]):'';
+  const placeScore=p=>{
+   const admin=[p.admin1,p.admin2,p.admin3,p.admin4].filter(Boolean).join('');
+   const exact=Number(p.name===specificPart||p.name===stripAdmin(specificPart))*100;
+   const context=contextParts.reduce((n,part)=>n+(admin.includes(part)||admin.includes(stripAdmin(part))?20:0),0);
+   const province=p.admin1?(p.admin1.includes(provinceKey)?40:-160):0;
+   const parent=p.admin2&&parentKey?(p.admin2.includes(parentKey)?70:-120):0;
+   return exact+context+province+parent;
+  };
+  placeResults.sort((a,b)=>placeScore(b)-placeScore(a)||(featureRank[a.feature_code]??9)-(featureRank[b.feature_code]??9)||(b.population||0)-(a.population||0));
+  const p=placeResults[0];
+  if(selectedCity[3]==='CN'&&((p.admin1&&!p.admin1.includes(provinceKey))||(p.admin2&&parentKey&&!p.admin2.includes(parentKey))||(selectedCity[0].endsWith('区')&&p.name!==specificPart&&p.name!==stripAdmin(specificPart))))throw new Error('地点服务无法确认该区所属城市，请选择上一级城市查询。');
+  forecastLocation={latitude:p.latitude,longitude:p.longitude,name:cityOptionLabel(selectedCity),countryCode:p.country_code,queryLabel:cityOptionLabel(selectedCity)};await loadFishingForecast(forecastLocation);
  }catch(err){setForecastStatus(err.message||'地点查询失败，请稍后重试。',true);}finally{$('#locationSearchBtn').disabled=false;}
 }
 function locateFishingLocation(){
- if(!navigator.geolocation){setForecastStatus('此浏览器不支持定位，请输入城市名称。',true);return;}
- setForecastStatus('请允许浏览器获取位置，以查询附近天气…');
- navigator.geolocation.getCurrentPosition(pos=>{forecastLocation={latitude:pos.coords.latitude,longitude:pos.coords.longitude,name:`当前位置 · ${pos.coords.latitude.toFixed(2)}, ${pos.coords.longitude.toFixed(2)}`};$('#locationInput').value='当前位置';loadFishingForecast(forecastLocation);},err=>{setForecastStatus(err.code===1?'未获得定位权限；也可以直接输入城市名称。':'定位暂不可用；请检查网络或输入城市名称。',true);},{enableHighAccuracy:false,timeout:12000,maximumAge:600000});
+ forecastLocation=null;
+ $('#forecastContent').hidden=true;
+ if(!navigator.geolocation){setForecastStatus('此浏览器不支持定位，请输入市或区名称。',true);return;}
+ setForecastStatus('正在获取当前位置，请允许浏览器定位…');
+ navigator.geolocation.getCurrentPosition(pos=>{
+  const latitude=pos.coords.latitude,longitude=pos.coords.longitude;
+  if(!withinChinaBounds(latitude,longitude)){setForecastStatus('当前位置不在中国天气查询范围内，请手动选择市或区。',true);return;}
+  forecastLocation={latitude,longitude,name:'当前位置',countryCode:'GPS'};
+  $('#locationInput').value='当前位置';
+  loadFishingForecast(forecastLocation);
+ },err=>{setForecastStatus(err.code===1?'未获得定位权限，请在浏览器中允许定位或手动选择市、区。':'定位失败，请手动选择市或区。',true);},{enableHighAccuracy:false,timeout:12000,maximumAge:600000});
 }
 async function loadFishingForecast(location){
+ if(!location||!(chinaCountryCodes.has(location.countryCode)||(location.countryCode==='GPS'&&withinChinaBounds(location.latitude,location.longitude)))){setForecastStatus('仅支持中国地区天气查询，请选择市或区。',true);return;}
  forecastLocation=location;setForecastStatus('正在更新天气和适钓分析…');$('#locationSearchBtn').disabled=true;
  const coords=`latitude=${encodeURIComponent(location.latitude)}&longitude=${encodeURIComponent(location.longitude)}`;
- const weatherUrl=`https://api.open-meteo.com/v1/forecast?${coords}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m&hourly=temperature_2m,precipitation_probability,precipitation,weather_code,wind_speed_10m&forecast_days=2&timezone=auto&wind_speed_unit=kmh`;
+ const cmaUrl=`https://api.open-meteo.com/v1/cma?${coords}&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m&forecast_days=2&timezone=auto&wind_speed_unit=kmh`;
+ const fallbackUrl=`https://api.open-meteo.com/v1/forecast?${coords}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m&hourly=temperature_2m,precipitation_probability,precipitation,weather_code,wind_speed_10m&forecast_days=2&timezone=auto&wind_speed_unit=kmh`;
  const marineUrl=`https://marine-api.open-meteo.com/v1/marine?${coords}&hourly=sea_level_height_msl,wave_height,wave_period,sea_surface_temperature&forecast_days=2&timezone=auto&cell_selection=sea`;
  try{
-  const [weatherRes,marineRes]=await Promise.all([fetch(weatherUrl),$('#waterSelect').value==='coast'?fetch(marineUrl).catch(()=>null):Promise.resolve(null)]);
-  if(!weatherRes.ok)throw new Error('天气服务暂不可用，请检查网络后重试。');
-  const weather=await weatherRes.json();const marine=marineRes&&marineRes.ok?await marineRes.json():null;
-  localStorage.setItem('lureGuideWeatherLocation',JSON.stringify(location));renderFishingForecast(weather,marine,location);setForecastStatus('天气已更新；建议结合现场风浪、鱼群和水色判断。');
- }catch(err){setForecastStatus(err.message||'天气更新失败，请稍后重试。',true);}finally{$('#locationSearchBtn').disabled=false;}
+  const [cmaRes,marineRes]=await Promise.all([fetch(cmaUrl).catch(()=>null),$('#waterSelect').value==='coast'?fetch(marineUrl).catch(()=>null):Promise.resolve(null)]);
+  let weather=null,modelSource='CMA GRAPES';
+  if(cmaRes?.ok){const candidate=await cmaRes.json();if(!candidate.error&&candidate.hourly?.time?.length){
+   weather=candidate;const h=weather.hourly,nowIndex=forecastIndex(h.time||[]),at=(key)=>h[key]?.[nowIndex];
+   weather.current={time:h.time?.[nowIndex],temperature_2m:at('temperature_2m'),relative_humidity_2m:at('relative_humidity_2m'),apparent_temperature:at('apparent_temperature'),is_day:at('is_day'),precipitation:at('precipitation'),weather_code:at('weather_code'),wind_speed_10m:at('wind_speed_10m'),wind_direction_10m:at('wind_direction_10m'),wind_gusts_10m:at('wind_gusts_10m')};
+  }}
+  if(!weather){const fallbackRes=await fetch(fallbackUrl).catch(()=>null);if(!fallbackRes?.ok)throw new Error('天气服务暂不可用，请检查网络后重试。');weather=await fallbackRes.json();modelSource='Open-Meteo 综合模式（回退）';}
+  const marine=marineRes&&marineRes.ok?await marineRes.json():null;
+  if(location.countryCode!=='GPS')localStorage.setItem('lureGuideWeatherLocation',JSON.stringify(location));renderFishingForecast(weather,marine,location,modelSource);setForecastStatus(weather.hourly?.precipitation_probability?'天气已更新；建议结合现场风浪、鱼群和水色判断。':'天气已更新；该模式未提供降水概率，雨量为模式估算，请结合现场判断。');
+ }catch(err){$('#forecastContent').hidden=true;setForecastStatus(err.message||'天气更新失败，请稍后重试。',true);}finally{$('#locationSearchBtn').disabled=false;}
 }
 function forecastIndex(times){let best=0,delta=Infinity;const now=Date.now();for(let i=0;i<(times||[]).length;i++){const d=Math.abs(new Date(times[i]).getTime()-now);if(Number.isFinite(d)&&d<delta){delta=d;best=i;}}return best;}
 function weatherLabel(code){return weatherText[code]||'天气变化';}
-function renderFishingForecast(weather,marine,location){
+function renderFishingForecast(weather,marine,location,modelSource='Open-Meteo 综合模式'){
  const current=weather.current||{},hourly=weather.hourly||{},times=hourly.time||[],idx=forecastIndex(times),code=Number(current.weather_code),desc=weatherLabel(code),wind=Number(current.wind_speed_10m)||0,temp=Number(current.temperature_2m),rainNow=Number(current.precipitation)||0;
- $('#forecastContent').hidden=false;$('#forecastPlace').textContent=location.name||'所选地点';$('#forecastUpdated').textContent=`更新于 ${String(current.time||'').replace('T',' ')}`;
+ $('#forecastContent').hidden=false;$('#forecastPlace').textContent=location.name||'所选地点';$('#forecastUpdated').textContent=`${modelSource} · ${String(current.time||'').replace('T',' ')}`;
  const glyph=weatherGlyph[desc]||'☁';
  $('#currentWeather').innerHTML=`<div class="weather-main"><span class="weather-glyph">${glyph}</span><div><span class="weather-caption">当前天气</span><strong>${safeText(desc)}</strong><span>${Number.isFinite(temp)?Math.round(temp)+'°':'--'}<small>体感 ${Number.isFinite(Number(current.apparent_temperature))?Math.round(current.apparent_temperature)+'°':'--'}</small></span></div></div><div class="weather-facts"><div><span>风速</span><strong>${Math.round(wind)}<small> km/h</small></strong></div><div><span>阵风</span><strong>${Number.isFinite(Number(current.wind_gusts_10m))?Math.round(current.wind_gusts_10m):'--'}<small> km/h</small></strong></div><div><span>降水</span><strong>${rainNow.toFixed(1)}<small> mm</small></strong></div><div><span>湿度</span><strong>${Number.isFinite(Number(current.relative_humidity_2m))?Math.round(current.relative_humidity_2m):'--'}<small>%</small></strong></div></div>`;
- const cards=[];for(let i=idx;i<Math.min(times.length,idx+19);i+=3){const c=Number(hourly.weather_code?.[i]),t=Number(hourly.temperature_2m?.[i]),pop=Number(hourly.precipitation_probability?.[i]);cards.push(`<div class="hour-card"><span>${i===idx?'现在':safeText(times[i]?.slice(11,16)||'--:--')}</span><b>${safeText(weatherGlyph[weatherLabel(c)]||'☁')}</b><strong>${Number.isFinite(t)?Math.round(t)+'°':'--'}</strong><small>雨 ${Number.isFinite(pop)?Math.round(pop):0}%</small></div>`);}
+ const cards=[];for(let i=idx;i<Math.min(times.length,idx+19);i+=3){const c=Number(hourly.weather_code?.[i]),t=Number(hourly.temperature_2m?.[i]),pop=Number(hourly.precipitation_probability?.[i]),amount=Number(hourly.precipitation?.[i]);const rainText=Number.isFinite(pop)?`雨 ${Math.round(pop)}%`:Number.isFinite(amount)?`雨量 ${amount.toFixed(1)} mm`:'降水 --';cards.push(`<div class="hour-card"><span>${i===idx?'现在':safeText(times[i]?.slice(11,16)||'--:--')}</span><b>${safeText(weatherGlyph[weatherLabel(c)]||'☁')}</b><strong>${Number.isFinite(t)?Math.round(t)+'°':'--'}</strong><small>${rainText}</small></div>`);}
  $('#hourlyStrip').innerHTML=cards.join('')||'<p class="small-note">暂时没有逐小时预报。</p>';
  const tide=buildTideSummary(marine);$('#tidePanel').innerHTML=tide.html;$('#fishingAnalysis').innerHTML=buildFishingAdvice({current,hourly,idx,marine,tide,desc,wind,temp,code,rainNow});
 }
@@ -182,9 +239,10 @@ function buildTideSummary(marine){
  return{direction,delta,html:`<div class="tide-panel-head"><div class="forecast-subhead"><strong>近岸潮位趋势</strong><span>未来约 36 小时</span></div><div class="tide-direction"><strong>${safeText(direction)}</strong><span>3 小时变化 ${delta>=0?'+':''}${delta.toFixed(2)} m</span></div></div>${chart}<div class="tide-turns">${turns}</div><p class="tide-caveat">潮位取自海洋数值模式并非当地验潮站实测；复杂岸线附近可能偏差较大。</p>`};
 }
 function buildFishingAdvice({hourly,idx,marine,tide,desc,wind,temp,code,rainNow}){
- let score=82;const reasons=[];const storm=code>=95;const rainProb=(hourly.precipitation_probability||[]).slice(idx,idx+7).map(Number).filter(Number.isFinite);const maxRain=rainProb.length?Math.max(...rainProb):0;
+ let score=82;const reasons=[];const storm=code>=95;const rainProb=(hourly.precipitation_probability||[]).slice(idx,idx+7).map(Number).filter(Number.isFinite);const maxRain=rainProb.length?Math.max(...rainProb):0;const rainAmount=(hourly.precipitation||[]).slice(idx,idx+7).map(Number).filter(Number.isFinite);const maxRainAmount=rainAmount.length?Math.max(...rainAmount):0;
  if(storm){score=8;reasons.push('预报有雷暴，安全优先，暂停岸边或船上作钓。');}else if(wind>=35){score-=38;reasons.push('风速较大，抛投和控线困难，避开迎风岸及外海位置。');}else if(wind>=25){score-=22;reasons.push('风偏大，选择背风岸或避风湾，并减轻外出风险。');}else if(wind>=15){score-=10;reasons.push('有风会影响控饵，可从背风岸或侧风位开始。');}else reasons.push('当前风力较温和，抛投和操控条件较友好。');
- if(maxRain>=75||rainNow>=5){score-=16;reasons.push(`近期降雨概率最高约 ${Math.round(maxRain)}%，注意雨势、水位和能见度。`);}else if(maxRain>=40||rainNow>0){score-=6;reasons.push('有阵雨可能，准备防雨并留意雨后水色变化。');}
+ if(rainProb.length){if(maxRain>=75||rainNow>=5){score-=16;reasons.push(`近期降雨概率最高约 ${Math.round(maxRain)}%，注意雨势、水位和能见度。`);}else if(maxRain>=40||rainNow>0){score-=6;reasons.push('有阵雨可能，准备防雨并留意雨后水色变化。');}}
+ else if(maxRainAmount>=5||rainNow>=5){score-=16;reasons.push(`模式预报近期小时雨量峰值约 ${maxRainAmount.toFixed(1)} mm，注意雨势、水位和能见度。`);}else if(maxRainAmount>=0.5||rainNow>0){score-=6;reasons.push('模式预报有降水，准备防雨并留意雨后水色变化。');}
  if(Number.isFinite(temp)){if(temp<5||temp>33){score-=12;reasons.push('气温偏冷/偏热，鱼可能降低活动范围，放慢搜索节奏。');}else if(temp>=10&&temp<=28){score+=4;reasons.push('气温处于较温和区间，可先搜索鱼群活动水层。');}}
  const waves=marine?.hourly?.wave_height||[],mt=marine?.hourly?.time||[],mi=forecastIndex(mt),waveMax=waves.slice(mi,mi+12).map(Number).filter(Number.isFinite);if($('#waterSelect').value==='coast'&&waveMax.length){const maxWave=Math.max(...waveMax);if(maxWave>2.2){score-=22;reasons.push(`近海模式预报浪高约 ${maxWave.toFixed(1)} m，谨慎评估岸线和出海安全。`);}else if(maxWave>1.2){score-=10;reasons.push(`近海模式浪高约 ${maxWave.toFixed(1)} m，优先选择背浪、避风点。`);}}
  if($('#waterSelect').value==='coast'&&tide.direction!=='淡水'&&tide.direction!=='未知'&&Math.abs(tide.delta)>.06){score+=5;reasons.push(`${tide.direction}，可优先观察潮沟、河口或结构边的饵鱼活动。`);}
@@ -200,12 +258,23 @@ init();
 window.LureSiteHooks={
  showSpotWeather(loc){
   if(!loc||!Number.isFinite(loc.lat)||!Number.isFinite(loc.lng))return;
-  forecastLocation={latitude:loc.lat,longitude:loc.lng,name:loc.name||'所选钓点'};
   const water=loc.water||'lake';
   if($('#waterSelect')&&['lake','river','pond','coast','stream'].includes(water))$('#waterSelect').value=water;
-  if($('#locationInput'))$('#locationInput').value=loc.name||'';
   showPage('recommend');
-  loadFishingForecast(forecastLocation);
+  // The built-in sample spots are curated China locations. User markers need a city choice.
+  const province=(loc.region||'').split(' · ')[0];
+  const knownProvince=chinaCities.some(city=>city[3]==='CN'&&city[1].startsWith(province));
+  if(loc.demo&&!loc.mine&&province&&knownProvince){
+   forecastLocation={latitude:loc.lat,longitude:loc.lng,name:loc.name||'所选钓点',countryCode:'CN'};
+   $('#locationInput').value='';
+   loadFishingForecast(forecastLocation);
+   return;
+  }
+  forecastLocation=null;
+  $('#forecastContent').hidden=true;
+  $('#locationInput').value='';
+  setForecastStatus(`已选择钓点「${loc.name||'所选钓点'}」。请在上方选择中国城市查询天气。`);
+  $('#locationInput').focus();
  },
  showSpotLure(detail){
   if(!detail)return;

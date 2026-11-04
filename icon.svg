@@ -1,1 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="32" fill="#b9e76d"/><path d="M18 42 39 20M27 20h12v12" fill="none" stroke="#102c2a" stroke-linecap="round" stroke-linejoin="round" stroke-width="5"/><path d="M15 48c7-4 12 4 19 0s12 4 19 0" fill="none" stroke="#102c2a" stroke-linecap="round" stroke-width="2"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">野路指南图标</title>
+  <desc id="desc">小鱼钓点标记与折叠地图</desc>
+  <rect width="512" height="512" rx="112" fill="#fffefa"/>
+  <g transform="translate(36 41) scale(.86)">
+    <path d="M256 70c-71 0-119 49-119 121 0 57 43 102 119 144 76-42 119-87 119-144 0-72-48-121-119-121Z" fill="none" stroke="#102c2a" stroke-width="19" stroke-linejoin="round"/>
+    <g transform="translate(47 -2) scale(.85)">
+      <g fill="none" stroke="#102c2a" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M172 238c29-25 68-39 107-33 29 4 52 18 67 35-18 21-42 34-68 37-40 5-79-10-106-39Z" stroke-width="16"/>
+        <path d="m172 238-37-31 11 31-11 31 37-31Z" stroke-width="16"/>
+        <path d="M296 214c-8 12-11 27-7 40" stroke-width="10"/>
+      </g>
+      <circle cx="315" cy="230" r="7" fill="#102c2a"/>
+    </g>
+  </g>
+  <path d="m118 372 89-21 98 21 89-21v89l-89 21-98-21-89 21v-89Z" fill="none" stroke="#102c2a" stroke-width="15" stroke-linejoin="round"/>
+  <path d="M207 351v89m98-68v89" fill="none" stroke="#102c2a" stroke-width="13" stroke-linecap="round"/>
+</svg>
