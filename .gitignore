@@ -2,3 +2,7 @@
 Thumbs.db
 .env
 .env.*
+android-app/.gradle/
+android-app/**/build/
+android-app/app/release.p12
+android-app/local.properties
