@@ -13,13 +13,13 @@
   <link rel="apple-touch-icon" href="apple-touch-icon.png?v=7">
   <link rel="stylesheet" href="style.css?v=21">
   <link rel="stylesheet" href="fishing-map.css?v=2">
-  <link rel="stylesheet" href="visual-refresh.css?v=4">
+  <link rel="stylesheet" href="visual-refresh.css?v=5">
   <title>路亚指南｜看鱼情选饵</title>
 </head>
 <body>
   <header class="topbar">
     <a class="brand" href="#home" aria-label="路亚指南首页"><img class="brand-mark-image" src="./logo-hupao-white.png" alt="手写个人标志"><span>野路<span class="brand-light">指南</span></span></a>
-    <div class="top-actions"><span class="offline-pill"><i></i> 离线可用</span><button class="icon-button" id="installBtn" hidden aria-label="安装到手机">＋</button></div>
+    <div class="top-actions"><span class="offline-pill"><i></i> 离线可用</span><a class="download-button" id="installBtn" href="./downloads/yeluzhinan-android.apk" download="野路指南-安卓.apk" aria-label="下载野路指南安卓安装包">下载安卓应用</a></div>
   </header>
 
   <main id="home">
@@ -85,7 +85,7 @@
     <section class="source-box"><span class="eyebrow">使用说明</span><p>本工具根据常见拟饵工作水层、目标鱼摄食方式和现场条件给出启发式建议。不同品牌的下潜深度、重量与动作差异明显，具体参数以产品标注为准。气压、温度等单项条件不能独立预测鱼获；请现场观察饵鱼、结构与水流并及时调整。</p><details><summary>参考资料与编写依据</summary><ul><li><a href="https://101.fishing/lures" target="_blank" rel="noreferrer">LURE 101：拟饵与钓组分类</a></li><li><a href="https://101.fishing/species" target="_blank" rel="noreferrer">LURE 101：常见路亚对象鱼</a></li><li><a href="https://www.mass.gov/info-details/bass-fishing-tips" target="_blank" rel="noreferrer">Mass.gov：黑鲈天气与水层建议</a></li><li><a href="https://secure.in.gov/dnr/fish-and-wildlife/education-programs/learn-to-fish/fishing-tips-and-videos/fishing-tips-when-and-where/" target="_blank" rel="noreferrer">Indiana DNR：风与水色的现场观察</a></li><li><a href="https://yyj.moa.gov.cn/scyz/201904/t20190428_6246986.htm" target="_blank" rel="noreferrer">农业农村部：新疆白斑狗鱼养殖与地域信息</a></li><li><a href="https://nynct.xinjiang.gov.cn/xjnynct/c113577/202309/f521eae462144ca2a13fd3fc2919370e.shtml" target="_blank" rel="noreferrer">新疆农业农村厅：额尔齐斯河流域鱼类资源</a></li><li><a href="https://www.schinafish.cn/cn/article/pdf/preview/10.12131/20190231.pdf" target="_blank" rel="noreferrer">《南方水产科学》：赤眼鳟分布与生态资料</a></li><li><a href="https://open-meteo.com/en/docs/geocoding-api" target="_blank" rel="noreferrer">Open-Meteo：城市地名检索说明</a></li></ul></details><details><summary>拟饵照片来源与顺序</summary><p>图鉴照片由用户上传素材制作，按收到的 1–24 顺序对应 24 种拟饵；选饵建议同步显示同一张对应照片。</p></details></section>
   </main>
 
-  <footer><div><div class="footer-brand">野路指南 <span>· 把每一竿抛得更有依据</span></div><details class="install-help"><summary>添加到手机主屏幕</summary><p>iPhone：用 Safari 打开网站，点“分享”→“添加到主屏幕”。安卓：用 Chrome 打开，点菜单 →“安装应用”或“添加到主屏幕”。离线缓存需首次联网打开。</p></details></div><span>适配 iOS · Android</span></footer>
+  <footer><div><div class="footer-brand">野路指南 <span>· 把每一竿抛得更有依据</span></div><details class="install-help"><summary>下载与安装说明</summary><p>安卓：点击页面右上角“下载安卓应用”，下载完成后打开安装包。浏览器或手机可能要求确认下载与安装。iPhone：用 Safari 打开网站，点“分享”→“添加到主屏幕”。</p></details></div><span>适配 iOS · Android</span></footer>
   <nav class="mobile-nav" aria-label="底部导航">
     <button data-page="recommend" class="active" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7.5"/><circle cx="11" cy="11" r="2.5"/><path d="m16.5 16.5 4 4M11 1.5v2M1.5 11h2"/></svg>选饵</button>
     <button data-page="lures" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 10.5c2-3.5 6-5.5 10-4.8 2.6.4 4.4 1.9 5.5 4.8-2 3.3-5.6 5.5-9.5 5-2.6-.3-4.6-1.8-6-5Z"/><circle cx="6.7" cy="9.6" r=".8" fill="currentColor" stroke="none"/><path d="M19 10.5 22 7v7l-3-3.5M10 15.5v2.6m-2-1.1 2 2 2-2m3-2.2v2.4m-1.9-1 1.9 1.9 1.9-1.9"/></svg>拟饵</button>
@@ -95,7 +95,7 @@
   </nav>
   <script src="china-cities.js?v=1"></script>
   <script src="china-districts.js?v=1"></script>
-  <script src="app.js?v=28"></script>
+  <script src="app.js?v=29"></script>
   <script src="fishing-map.js?v=7"></script>
 </body>
 </html>

@@ -312,6 +312,10 @@ footer{padding-top:31px;padding-bottom:31px}
 .analysis-reasons{font-size:12px}
 .species-suggest>span,.fish-chip,.safety-alert{font-size:12px}
 
+.download-button{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:0 14px;border-radius:18px;background:#102c2a;color:#fffefa;text-decoration:none;font-size:12px;font-weight:700;white-space:nowrap}
+.download-button:focus-visible{outline:3px solid #b9e76d;outline-offset:3px}
+@media(max-width:480px){.top-actions .offline-pill{display:none}.download-button{font-size:11px;padding:0 11px}}
+
 @media(max-width:760px){
   .forecast-panel .eyebrow{font-size:11px}
   .forecast-heading h3{font-size:22px}
