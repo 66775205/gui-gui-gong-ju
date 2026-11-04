@@ -39,6 +39,8 @@ jobs:
           ANDROID_KEYSTORE_PATH: release.p12
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
         run: gradle -p android-app --no-daemon assembleRelease
+      - name: Verify APK signature
+        run: "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose android-app/app/build/outputs/apk/release/app-release.apk
       - uses: actions/upload-artifact@v4
         with:
           name: yeluzhinan-android-apk
