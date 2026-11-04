@@ -11,7 +11,7 @@
   <link rel="icon" href="favicon-32.png?v=7" sizes="32x32" type="image/png">
   <link rel="icon" href="icon.svg?v=7" type="image/svg+xml">
   <link rel="apple-touch-icon" href="apple-touch-icon.png?v=7">
-  <link rel="stylesheet" href="style.css?v=19">
+  <link rel="stylesheet" href="style.css?v=20">
   <link rel="stylesheet" href="fishing-map.css?v=2">
   <link rel="stylesheet" href="visual-refresh.css?v=3">
   <title>路亚指南｜看鱼情选饵</title>
@@ -19,8 +19,17 @@
 <body>
   <header class="topbar">
     <a class="brand" href="#home" aria-label="路亚指南首页"><img class="brand-mark-image" src="./logo-hupao-white.png" alt="手写个人标志"><span>野路<span class="brand-light">指南</span></span></a>
-    <div class="top-actions"><span class="offline-pill"><i></i> 离线可用</span><button class="icon-button" id="installBtn" hidden aria-label="安装到手机">＋</button></div>
+    <div class="top-actions"><span class="offline-pill"><i></i> 离线可用</span><button class="icon-button install-button" id="installBtn" type="button" aria-controls="installGuide" aria-expanded="false">安装应用</button></div>
   </header>
+
+  <section class="install-guide" id="installGuide" hidden aria-label="安装到手机的方法">
+    <div>
+      <strong>把野路指南放到手机桌面</strong>
+      <p>点浏览器右上角的菜单，选择“安装应用”“添加到桌面”或“添加到主屏幕”。</p>
+      <p>如果是在微信、QQ 等应用内打开，请先选“在浏览器中打开”。部分浏览器只会创建桌面快捷方式。</p>
+    </div>
+    <button type="button" id="installGuideClose" aria-label="关闭安装说明">知道了</button>
+  </section>
 
   <main id="home">
     <section class="hero">
@@ -95,7 +104,7 @@
   </nav>
   <script src="china-cities.js?v=1"></script>
   <script src="china-districts.js?v=1"></script>
-  <script src="app.js?v=26"></script>
+  <script src="app.js?v=27"></script>
   <script src="fishing-map.js?v=7"></script>
 </body>
 </html>
