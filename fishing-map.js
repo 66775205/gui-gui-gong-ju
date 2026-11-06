@@ -4,7 +4,7 @@
  * 优先使用高德地图 JS API 2.0；API 不可用时保留原有底图作临时回退。
  * 钓点数据统一存储 WGS-84，在高德地图上显示时转换为 GCJ-02。
  * 功能：钓点筛选、聚合、搜索、详情、定位、添加我的钓点、导入导出、坐标复制。
- * 接入方式见《接入指南-GPT.md》。作者：为「野路指南」定制。
+ * 接入方式见 README.md。作者：为「野路指南」定制。
  */
 (function () {
   'use strict';
@@ -12,8 +12,8 @@
   var VERSION = '2.0.0';
   /* 运行时配置由安全代理提供；Web 服务 Key 和 JsCode 不写入公开仓库。 */
   var AMAP_CONFIG = window.YeluAmapConfig || {};
-  var AMAP_JS_KEY = String(AMAP_CONFIG.jsKey || '');
-  var AMAP_SERVICE_HOST = String(AMAP_CONFIG.serviceHost || '').replace(/\/$/, '');
+  var AMAP_JS_KEY = String(AMAP_CONFIG.jsKey || 'fab9921529f325142559a91a9a4146be');
+  var AMAP_SERVICE_HOST = String(AMAP_CONFIG.serviceHost || 'https://wondrous-boba-6cb62d.netlify.app/_AMapService').replace(/\/$/, '');
   var amapLoader = null;
   function loadAMap() {
     if (window.AMap && window.AMap.Map) return Promise.resolve(window.AMap);
@@ -22,7 +22,12 @@
       return Promise.reject(new Error('缺少高德 Web 端 Key 或安全代理地址'));
     }
     window._AMapSecurityConfig = { serviceHost: AMAP_SERVICE_HOST };
-    amapLoader = new Promise(function (resolve, reject) {
+    amapLoader = fetch(AMAP_SERVICE_HOST + '/health').then(function (response) {
+      if (!response.ok) throw new Error('高德地图安全代理暂不可用');
+      return response.json();
+    }).then(function (status) {
+      if (!status.ready) throw new Error('高德地图安全代理尚未配置');
+      return new Promise(function (resolve, reject) {
       var script = document.createElement('script');
       var timer = setTimeout(function () { reject(new Error('高德地图载入超时')); }, 12000);
       script.src = 'https://webapi.amap.com/loader.js';
@@ -35,6 +40,7 @@
       };
       script.onerror = function () { clearTimeout(timer); reject(new Error('高德地图脚本加载失败')); };
       document.head.appendChild(script);
+      });
     });
     return amapLoader;
   }
@@ -1196,11 +1202,11 @@
       this._searchTimer = setTimeout(function () {
         var controller = new AbortController();
         self._searchAbort = controller;
-        var base = AMAP_SERVICE_HOST + '/v3/';
+        var base = AMAP_SERVICE_HOST + '/search/';
         var params = '&city=' + encodeURIComponent('全国');
         var urls = [
-          base + 'assistant/inputtips?keywords=' + encodeURIComponent(q) + params,
-          base + 'place/text?keywords=' + encodeURIComponent(q) + params + '&offset=20&page=1'
+          base + 'inputtips?keywords=' + encodeURIComponent(q) + params,
+          base + 'place?keywords=' + encodeURIComponent(q) + params + '&offset=20&page=1'
         ];
         function getJson(url) {
           return fetch(url, { signal: controller.signal }).then(function (r) {
