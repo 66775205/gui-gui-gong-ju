@@ -25,9 +25,9 @@
 
 ## 高德钓点地图接入
 
-地图 JS API 从高德在线加载，不将高德脚本下载或打包到项目中。`fishing-map.js` 内的 Web 端 Key 可公开，但 JsCode 安全密钥和 Web 服务 Key 只能在 Netlify 的环境变量中设置：
+地图 JS API 从高德在线加载，不将高德脚本下载或打包到项目中。`fishing-map.js` 内的 Web 端 Key 可公开，但 JsCode 安全密钥和 Web 服务 Key 只能保存在代理服务的密钥设置中：
 
 - `AMAP_JS_CODE`：与 Web 端 JS API Key 同一行的安全密钥。
 - `AMAP_WEB_SERVICE_KEY`：用于搜索地名、水库和河流的 Web 服务 Key。
 
-Netlify 站点应连接本 GitHub 仓库，并把发布目录设为仓库根目录。`netlify/functions/amap-service.mjs` 会在 `/_AMapService/*` 提供代理，`/_AMapService/health` 返回 `{"ready":true}` 时网页才加载高德地图。设置或更新环境变量后要重新部署。GitHub Pages 无法运行该代理；网页会向配置的 Netlify 地址请求地图服务。代理未部署或不可用时，地图自动回退到旧底图。不要把两个服务端凭据写入仓库或 `netlify.toml`。
+网站继续使用 GitHub Pages 地址。`amap-proxy/worker.js` 是独立的 Cloudflare Worker，只提供 `/_AMapService/*` 代理接口，不托管网站。部署 Worker 后将其地址加上 `/_AMapService`，通过 `window.YeluAmapConfig.serviceHost` 在 `fishing-map.js` 加载前设置。`/_AMapService/health` 返回 `{"ready":true}` 时网页才加载高德地图。GitHub Pages 本身无法运行代理。代理未部署或不可用时，地图自动回退到旧底图。不要把两个服务端凭据写入仓库或 Worker 配置文件。

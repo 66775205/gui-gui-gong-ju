@@ -1,7 +1,6 @@
-// 高德地图 JS API 的服务端代理。只在 Netlify 环境变量中保存 JsCode 和 Web 服务 Key。
+// 高德地图 JS API 的服务端代理。JsCode 和 Web 服务 Key 仅存于 Cloudflare Worker Secrets。
 const allowedOrigins = new Set([
-  'https://66775205.github.io',
-  'https://wondrous-boba-6cb62d.netlify.app'
+  'https://66775205.github.io'
 ]);
 
 function corsHeaders(origin) {
@@ -20,7 +19,7 @@ function reply(body, status, origin) {
   });
 }
 
-export default async function amapService(request) {
+async function amapService(request, env) {
   const url = new URL(request.url);
   const origin = request.headers.get('origin');
   // 浏览器跨站请求必须来自网站；同源请求没有 Origin 标头。
@@ -28,8 +27,8 @@ export default async function amapService(request) {
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(origin) });
   if (request.method !== 'GET') return reply('{"error":"method not allowed"}', 405, origin);
 
-  const jsCode = process.env.AMAP_JS_CODE;
-  const webKey = process.env.AMAP_WEB_SERVICE_KEY;
+  const jsCode = env.AMAP_JS_CODE;
+  const webKey = env.AMAP_WEB_SERVICE_KEY;
   const path = url.pathname.slice('/_AMapService'.length);
   if (path === '/health') {
     return reply(JSON.stringify({ ready: Boolean(jsCode && webKey) }), 200, origin);
@@ -65,4 +64,4 @@ export default async function amapService(request) {
   }
 }
 
-export const config = { path: '/_AMapService/*' };
+export default { fetch: amapService };
