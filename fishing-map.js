@@ -1,16 +1,43 @@
 /*!
- * 野路指南 · 钓点地图模块  fishing-map.js  v1.1.0
+ * 野路指南 · 钓点地图模块  fishing-map.js  v2.0.0
  * ---------------------------------------------------------------
- * 零依赖（不需要 Leaflet / 不需要 npm / 不需要 Key），单个文件即可运行。
- * 内置瓦片引擎 + 高德 GCJ-02 与 OSM WGS-84 双坐标系自动纠偏（国内地图最容易错的坑）。
- * 底图：中文标准（高德公共瓦片）/ OSM 标准 / 卫星影像（Esri）/ 地形水系（OpenTopoMap）
+ * 优先使用高德地图 JS API 2.0；API 不可用时保留原有底图作临时回退。
+ * 钓点数据统一存储 WGS-84，在高德地图上显示时转换为 GCJ-02。
  * 功能：钓点筛选、聚合、搜索、详情、定位、添加我的钓点、导入导出、坐标复制。
  * 接入方式见《接入指南-GPT.md》。作者：为「野路指南」定制。
  */
 (function () {
   'use strict';
 
-  var VERSION = '1.1.0';
+  var VERSION = '2.0.0';
+  /* 运行时配置由安全代理提供；Web 服务 Key 和 JsCode 不写入公开仓库。 */
+  var AMAP_CONFIG = window.YeluAmapConfig || {};
+  var AMAP_JS_KEY = String(AMAP_CONFIG.jsKey || '');
+  var AMAP_SERVICE_HOST = String(AMAP_CONFIG.serviceHost || '').replace(/\/$/, '');
+  var amapLoader = null;
+  function loadAMap() {
+    if (window.AMap && window.AMap.Map) return Promise.resolve(window.AMap);
+    if (amapLoader) return amapLoader;
+    if (!AMAP_JS_KEY || !AMAP_SERVICE_HOST) {
+      return Promise.reject(new Error('缺少高德 Web 端 Key 或安全代理地址'));
+    }
+    window._AMapSecurityConfig = { serviceHost: AMAP_SERVICE_HOST };
+    amapLoader = new Promise(function (resolve, reject) {
+      var script = document.createElement('script');
+      var timer = setTimeout(function () { reject(new Error('高德地图载入超时')); }, 12000);
+      script.src = 'https://webapi.amap.com/loader.js';
+      script.async = true;
+      script.onload = function () {
+        if (!window.AMapLoader) { clearTimeout(timer); reject(new Error('高德地图加载器不可用')); return; }
+        window.AMapLoader.load({ key: AMAP_JS_KEY, version: '2.0' }).then(function (AMap) {
+          clearTimeout(timer); resolve(AMap);
+        }, function (error) { clearTimeout(timer); reject(error); });
+      };
+      script.onerror = function () { clearTimeout(timer); reject(new Error('高德地图脚本加载失败')); };
+      document.head.appendChild(script);
+    });
+    return amapLoader;
+  }
   var TILE = 256;
   var MAXLAT = 85.05112878;
   /* 用固定屏幕像素比例拖图，缩放等级不改变手感；低于 1 可减少过冲。 */
@@ -84,7 +111,7 @@
      ========================================================= */
   var BASEMAPS = [
     {
-      id: 'amap', name: '中文标准', hint: '高德', crs: 'gcj02',
+      id: 'amap', name: '高德标准', hint: '高德', crs: 'gcj02',
       url: 'https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',
       subs: ['1', '2', '3', '4'], min: 3, max: 18,
       attr: '底图 &copy; 高德地图（公共瓦片）'
@@ -306,6 +333,9 @@
     this.viewKey = (o.storageKey || 'lureGuideSpots') + ':view';
     this._raf = 0;
     this._destroyed = false;
+    this.amap = null;
+    this.amapReady = false;
+    this.amapLoading = false;
 
     this.spots = (Array.isArray(o.spots) && o.spots.length ? o.spots : SEED).map(normalize);
     this.readMine();
@@ -319,6 +349,7 @@
     this.render();
     this.loadExternal();
     this.loadGeolocationOnStart();
+    if (this.vw >= 200) this.initAMap();
 
     el.__fishingMap = this;
     this._ro = null;
@@ -330,6 +361,8 @@
         self.restoreView();
         self.renderMarks(true);
       }
+      if (self.vw >= 200) self.initAMap();
+      if (self.amapReady && typeof self.amap.resize === 'function') self.amap.resize();
       self.render();
     };
     if (window.ResizeObserver) {
@@ -378,6 +411,7 @@
         '<div class="fm-chips"></div>' +
         '<div class="fm-stage">' +
           '<div class="fm-tiles"></div>' +
+          '<div class="fm-amap" aria-label="高德钓点地图"></div>' +
           '<div class="fm-marks"></div>' +
           '<div class="fm-loading">正在载入底图…</div>' +
           '<div class="fm-zoom"><button data-act="zin" aria-label="放大">+</button>' +
@@ -420,6 +454,7 @@
 
       this.stage = el.querySelector('.fm-stage');
       this.tilesEl = el.querySelector('.fm-tiles');
+      this.amapEl = el.querySelector('.fm-amap');
       this.marksEl = el.querySelector('.fm-marks');
       this.loadingEl = el.querySelector('.fm-loading');
       this.coordEl = el.querySelector('.fm-coord');
@@ -448,28 +483,107 @@
       this.vh = Math.max(120, Math.round(r.height));
     },
 
+    initAMap: function () {
+      if (this.amapLoading || this.amapReady || this.amapFailed || this.vw < 200) return;
+      var self = this;
+      this.amapLoading = true;
+      function fallback() {
+        if (self.amapReady || self._destroyed) return;
+        clearTimeout(self._amapTimer);
+        self.amapFailed = true;
+        self.amapLoading = false;
+        if (self.amap) { try { self.amap.destroy(); } catch (e) {} self.amap = null; }
+        self.amapEl.style.display = 'none';
+        self.tilesEl.style.display = '';
+        self.render();
+        self.hint('高德地图暂时无法加载，已切回备用底图；请检查 Web 端 Key 的安全密钥与域名设置。', 6500);
+      }
+      loadAMap().then(function (AMap) {
+        if (self._destroyed) return;
+        var c = wgs2gcj(self.center.lat, self.center.lng);
+        self.amap = new AMap.Map(self.amapEl, {
+          center: [c[1], c[0]], zoom: self.zoom, zooms: [3, 19],
+          viewMode: '2D', dragEnable: true, zoomEnable: true, jogEnable: false,
+          resizeEnable: true, mapStyle: 'amap://styles/normal'
+        });
+        self._amapTimer = setTimeout(fallback, 13000);
+        self.amap.on('complete', function () {
+          if (self._destroyed || self.amapFailed) return;
+          clearTimeout(self._amapTimer);
+          self.amapReady = true;
+          self.amapLoading = false;
+          self._lastDragMoved = 0;
+          self.tilesEl.style.display = 'none';
+          self.loadingEl.classList.add('off');
+          if (self.bmId === 'sat') self.setBasemap('sat', true);
+          else self.bmId = 'amap';
+          self.renderMarks(true);
+          self.render();
+        });
+        self.amap.on('error', fallback);
+        self.amap.on('mapmove', function () { self.syncAMap(); });
+        self.amap.on('zoomchange', function () { self.syncAMap(); });
+        self.amap.on('moveend', function () { self.syncAMap(); self.saveView(); });
+        self.amap.on('zoomend', function () { self.syncAMap(); self.saveView(); });
+        self.amap.on('click', function (e) {
+          if (!self.picking) return;
+          var w = gcj2wgs(e.lnglat.lat, e.lnglat.lng);
+          self.cancelPick();
+          self.openForm({ lat: w[0], lng: w[1] });
+        });
+      }).catch(fallback);
+    },
+    syncAMap: function () {
+      if (!this.amapReady || this._destroyed) return;
+      var c = this.amap.getCenter();
+      var w = gcj2wgs(c.lat, c.lng);
+      this.center = { lat: w[0], lng: w[1] };
+      this.zoom = this.amap.getZoom();
+      this.renderMarks();
+      this.positionMarks();
+      this.updateScale();
+      this.updateFoot();
+    },
+    mapPoint: function (lat, lng) {
+      if (this.amapReady) {
+        var c = wgs2gcj(lat, lng);
+        var p = this.amap.lngLatToContainer([c[1], c[0]]);
+        return { x: p.x != null ? p.x : p.getX(), y: p.y != null ? p.y : p.getY() };
+      }
+      var d = this.disp(lat, lng), w = project(d[0], d[1], this.zoom);
+      var cc = this.disp(this.center.lat, this.center.lng), cw = project(cc[0], cc[1], this.zoom);
+      return { x: w[0] - cw[0] + this.vw / 2, y: w[1] - cw[1] + this.vh / 2 };
+    },
+
     /* ---------- 6.3 底图 / 坐标系 ---------- */
     bm: function () {
       for (var i = 0; i < BASEMAPS.length; i++) if (BASEMAPS[i].id === this.bmId) return BASEMAPS[i];
       return BASEMAPS[0];
     },
     disp: function (lat, lng) {
-      return this.bm().crs === 'gcj02' ? wgs2gcj(lat, lng) : [lat, lng];
+      return this.amapReady || this.bm().crs === 'gcj02' ? wgs2gcj(lat, lng) : [lat, lng];
     },
     undisp: function (lat, lng) {
-      return this.bm().crs === 'gcj02' ? gcj2wgs(lat, lng) : [lat, lng];
+      return this.amapReady || this.bm().crs === 'gcj02' ? gcj2wgs(lat, lng) : [lat, lng];
     },
-    minZoom: function () { return this.bm().min || 3; },
-    maxZoom: function () { return this.bm().max || 18; },
+    minZoom: function () { return this.amapReady ? 3 : this.bm().min || 3; },
+    maxZoom: function () { return this.amapReady ? 19 : this.bm().max || 18; },
 
     /* ---------- 6.4 视图控制 ---------- */
     setView: function (lat, lng, zoom, animate) {
       var z = clamp(zoom == null ? this.zoom : zoom, this.minZoom(), this.maxZoom());
       var la = clamp(lat, -MAXLAT, MAXLAT);
+      if (this.amapReady) {
+        this.center = { lat: la, lng: lng }; this.zoom = z;
+        var gcj = wgs2gcj(la, lng);
+        this.amap.setZoomAndCenter(z, [gcj[1], gcj[0]]);
+        this.render(); this.saveView(); return;
+      }
       if (!animate) { this.center = { lat: la, lng: lng }; this.zoom = z; this.render(); return; }
       this.flyTo(la, lng, z);
     },
     flyTo: function (lat, lng, zoom, ms) {
+      if (this.amapReady) { this.setView(lat, lng, zoom, false); return; }
       var self = this;
       this.cancelAnim();
       var from = { lat: this.center.lat, lng: this.center.lng, z: this.zoom };
@@ -503,6 +617,7 @@
     zoomBy: function (delta, anchor) {
       var z = clamp(this.zoom + delta, this.minZoom(), this.maxZoom());
       if (z === this.zoom) return;
+      if (this.amapReady) { this.setView(this.center.lat, this.center.lng, z, false); return; }
       if (anchor) this.setViewAnchored(anchor.lat, anchor.lng, anchor.x, anchor.y, z);
       else this.setView(this.center.lat, this.center.lng, z, false);
     },
@@ -520,6 +635,7 @@
       this.render();
     },
     panBy: function (dx, dy) {
+      if (this.amapReady) { this.amap.panBy(dx, dy); return; }
       /* dx / dy 是视口 CSS 像素；投影直接使用当前缩放级别，保持各级别一致。 */
       var d = this.disp(this.center.lat, this.center.lng);
       var w = project(d[0], d[1], this.zoom);
@@ -529,6 +645,11 @@
       this.render();
     },
     screenToLatLng: function (sx, sy) {
+      if (this.amapReady) {
+        var p = this.amap.containerToLngLat(new window.AMap.Pixel(sx, sy));
+        var wgs = gcj2wgs(p.lat, p.lng);
+        return { lat: wgs[0], lng: wgs[1] };
+      }
       var d = this.disp(this.center.lat, this.center.lng);
       var w = project(d[0], d[1], this.zoom);
       var u = unproject(w[0] + (sx - this.vw / 2), w[1] + (sy - this.vh / 2), this.zoom);
@@ -551,7 +672,8 @@
         var p1 = project(maxLat, minLng, z), p2 = project(minLat, maxLng, z);
         if (Math.abs(p2[0] - p1[0]) <= this.vw - 90 && Math.abs(p2[1] - p1[1]) <= this.vh - 90) break;
       }
-      this.setView((minLat + maxLat) / 2, (minLng + maxLng) / 2, z, false);
+      var middle = this.undisp((minLat + maxLat) / 2, (minLng + maxLng) / 2);
+      this.setView(middle[0], middle[1], z, false);
     },
 
     /* ---------- 6.5 渲染 ---------- */
@@ -565,6 +687,10 @@
     },
 
     renderTiles: function () {
+      if (this.amapReady) {
+        this.attribEl.textContent = '© 高德地图';
+        return;
+      }
       var bm = this.bm();
       /* 视角飞行过程中锁定瓦片层级，只用 CSS 缩放，避免每帧请求一屏新瓦片 */
       var z = this._lockTileZ && this.tileZ ? this.tileZ
@@ -642,11 +768,7 @@
       var self = this;
 
       function screenOf(s) {
-        var d = self.disp(s.lat, s.lng);
-        var w = project(d[0], d[1], self.zoom);
-        var c = self.disp(self.center.lat, self.center.lng);
-        var cw = project(c[0], c[1], self.zoom);
-        return { x: w[0] - cw[0] + self.vw / 2, y: w[1] - cw[1] + self.vh / 2 };
+        return self.mapPoint(s.lat, s.lng);
       }
 
       if (clusters) {
@@ -672,7 +794,7 @@
               self.flyTo(lat / n, lng / n, Math.min(self.zoom + 2, 13));
             });
             self.marksEl.appendChild(el);
-            self.marks.push({ el: el, x: mx / n, y: my / n, cluster: true });
+            self.marks.push({ el: el, x: mx / n, y: my / n, lat: lat / n, lng: lng / n, cluster: true });
           } else {
             addPin(g[0].s, g[0].p);
           }
@@ -707,17 +829,10 @@
     /* 只更新标记位置（拖动/缩放时高频调用） */
     positionMarks: function () {
       var self = this;
-      var c = this.disp(this.center.lat, this.center.lng);
-      var cw = project(c[0], c[1], this.zoom);
       this.marks.forEach(function (m) {
         var x, y;
-        if (m.cluster) { x = m.x; y = m.y; }
-        else {
-          var d = self.disp(m.lat, m.lng);
-          var w = project(d[0], d[1], self.zoom);
-          x = w[0] - cw[0] + self.vw / 2;
-          y = w[1] - cw[1] + self.vh / 2;
-        }
+        var p = self.amapReady || !m.cluster ? self.mapPoint(m.lat, m.lng) : { x: m.x, y: m.y };
+        x = p.x; y = p.y;
         if (x < -160 || x > self.vw + 160 || y < -160 || y > self.vh + 160) {
           m.el.style.display = 'none';
         } else {
@@ -729,10 +844,9 @@
       this.el.classList.toggle('labels', this.zoom >= 10);
       /* 我的位置标记跟随 */
       if (this._me && isFinite(this._meLat)) {
-        var md = this.disp(this._meLat, this._meLng);
-        var mw = project(md[0], md[1], this.zoom);
-        this._me.style.transform = 'translate3d(' + (mw[0] - cw[0] + this.vw / 2).toFixed(1) +
-          'px,' + (mw[1] - cw[1] + this.vh / 2).toFixed(1) + 'px,0) translate(-50%,-50%)';
+        var me = this.mapPoint(this._meLat, this._meLng);
+        this._me.style.transform = 'translate3d(' + me.x.toFixed(1) +
+          'px,' + me.y.toFixed(1) + 'px,0) translate(-50%,-50%)';
       }
     },
 
@@ -753,7 +867,7 @@
       var n = this.visibleSpots().length;
       this.el.querySelector('.fm-foot .cnt').textContent = n;
       this.el.querySelector('.fm-foot .lv').textContent = 'z' + this.zoom.toFixed(1);
-      this.el.querySelector('.fm-foot .bmname').textContent = this.bm().name;
+      this.el.querySelector('.fm-foot .bmname').textContent = this.amapReady && this.bmId === 'sat' ? '高德卫星' : this.bm().name;
       var src = this.el.querySelector('.fm-foot .src');
       if (src) src.textContent = this.hasDemo() ? '示例数据 · 请核对' : '我的数据';
     },
@@ -800,12 +914,9 @@
     },
 
     anyVisible: function (list) {
-      var c = this.disp(this.center.lat, this.center.lng);
-      var cw = project(c[0], c[1], this.zoom);
       for (var i = 0; i < list.length; i++) {
-        var d = this.disp(list[i].lat, list[i].lng);
-        var w = project(d[0], d[1], this.zoom);
-        var x = w[0] - cw[0] + this.vw / 2, y = w[1] - cw[1] + this.vh / 2;
+        var p = this.mapPoint(list[i].lat, list[i].lng);
+        var x = p.x, y = p.y;
         if (x > 24 && x < this.vw - 24 && y > 24 && y < this.vh - 24) return true;
       }
       return false;
@@ -823,7 +934,7 @@
 
         if (chip) { self.setFilter(chip.dataset.filter); return; }
         if (layer) { self.setBasemap(layer.dataset.bm); return; }
-        if (pin) { if (pin.dataset.id && self._lastDragMoved < 6) self.selectSpot(pin.dataset.id); return; }
+        if (pin) { if (pin.dataset.id && (self.amapReady || self._lastDragMoved < 6)) self.selectSpot(pin.dataset.id); return; }
         if (!actEl) {
           if (self.picking) self.applyPick(e);
           return;
@@ -867,12 +978,13 @@
 
       /* 指针：拖动 / 双指 / 点击 */
       var st = this.stage;
-      st.addEventListener('pointerdown', function (e) { self.onDown(e); });
-      st.addEventListener('pointermove', function (e) { self.onMove(e); });
-      st.addEventListener('pointerup', function (e) { self.onUp(e); });
-      st.addEventListener('pointercancel', function (e) { self.onUp(e, true); });
-      st.addEventListener('lostpointercapture', function (e) { self.onUp(e, true); });
+      st.addEventListener('pointerdown', function (e) { if (!self.amap) self.onDown(e); });
+      st.addEventListener('pointermove', function (e) { if (!self.amap) self.onMove(e); });
+      st.addEventListener('pointerup', function (e) { if (!self.amap) self.onUp(e); });
+      st.addEventListener('pointercancel', function (e) { if (!self.amap) self.onUp(e, true); });
+      st.addEventListener('lostpointercapture', function (e) { if (!self.amap) self.onUp(e, true); });
       st.addEventListener('wheel', function (e) {
+        if (self.amap) return;
         e.preventDefault();
         var r = st.getBoundingClientRect();
         var p = { x: e.clientX - r.left, y: e.clientY - r.top };
@@ -882,6 +994,7 @@
         self.zoomBy(e.deltaY < 0 ? stepZ : -stepZ, { lat: ll.lat, lng: ll.lng, x: p.x, y: p.y });
       }, { passive: false });
       st.addEventListener('dblclick', function (e) {
+        if (self.amap) return;
         var r = st.getBoundingClientRect();
         var p = { x: e.clientX - r.left, y: e.clientY - r.top };
         var ll = self.screenToLatLng(p.x, p.y);
@@ -976,11 +1089,12 @@
     },
     openPanel: function () {
       var self = this;
-      var html = '<h4>底图</h4>' + BASEMAPS.map(function (b) {
+      var maps = this.amapReady ? BASEMAPS.filter(function (b) { return b.id === 'amap' || b.id === 'sat'; }) : BASEMAPS;
+      var html = '<h4>底图</h4>' + maps.map(function (b) {
         return '<button class="fm-layer' + (b.id === self.bmId ? ' on' : '') + '" data-bm="' + b.id + '">' +
-          '<i></i>' + b.name + '<small>' + b.hint + '</small></button>';
+          '<i></i>' + (self.amapReady && b.id === 'sat' ? '高德卫星' : b.name) + '<small>' + b.hint + '</small></button>';
       }).join('') +
-        '<p class="fm-note">中文标准图用高德公共瓦片（GCJ-02）；其余为 WGS-84，切换时钓点位置已自动纠偏。卫星图最适合找草区、堤坝与深浅交界。</p>' +
+        '<p class="fm-note">' + (this.amapReady ? '高德标准图和卫星图均使用官方地图服务；钓点坐标已自动对齐。' : '高德 API 暂不可用，当前显示备用底图。') + '</p>' +
         '<hr><h4>数据</h4><div class="fm-mini">' +
         '<button data-act="fitAll">看全部钓点</button>' +
         '<button data-act="export">导出我的</button>' +
@@ -1005,8 +1119,18 @@
       this.panelEl.hidden = true;
       if (this._outside) { document.removeEventListener('click', this._outside); this._outside = null; }
     },
-    setBasemap: function (id) {
-      if (id === this.bmId) { this.closePanel(); return; }
+    setBasemap: function (id, force) {
+      if (id === this.bmId && !force) { this.closePanel(); return; }
+      if (this.amapReady) {
+        if (id !== 'amap' && id !== 'sat') return;
+        var AMap = window.AMap;
+        if (id === 'sat') this.amap.setLayers([new AMap.TileLayer.Satellite(), new AMap.TileLayer.RoadNet()]);
+        else this.amap.setLayers([typeof AMap.createDefaultLayer === 'function' ? AMap.createDefaultLayer() : new AMap.TileLayer()]);
+        this.bmId = id;
+        this.saveView(); this.renderMarks(true); this.render(); this.closePanel();
+        if (!force) this.toast('已切换：' + (id === 'sat' ? '高德卫星' : '高德标准'));
+        return;
+      }
       /* 换坐标系前，先把当前视野中心换算成 WGS-84（内部统一用 WGS-84 存储） */
       this.bmId = id;
       this.tileEls.forEach(function (el) { el.remove(); });
@@ -1023,6 +1147,9 @@
 
     /* ---------- 6.9 搜索 ---------- */
     search: function (q) {
+      return this.searchAMap(q);
+    },
+    searchAMap: function (q) {
       var self = this;
       q = String(q || '').trim();
       if (!q) { this.closeList(); return; }
@@ -1035,20 +1162,17 @@
         return (s.name + ' ' + s.region + ' ' + (s.fish || []).join(' ') + ' ' + s.structure)
           .toLowerCase().indexOf(lower) >= 0;
       }).slice(0, 5);
-
       var rows = local.map(function (s) {
         var t = TYPES[s.type] || TYPES.lake;
         return '<button class="fm-list-item" data-spot="' + esc(s.id) + '">' +
-          '<span class="k">' + esc(t.short) + '</span>' +
-          '<span class="t">' + esc(s.name) + '</span>' +
+          '<span class="k">' + esc(t.short) + '</span><span class="t">' + esc(s.name) + '</span>' +
           '<span class="s">' + esc(s.region || (fmt(s.lat) + ',' + fmt(s.lng))) + '</span></button>';
       }).join('');
-
       if (q.length < 2) {
-        this.showList(rows + '<div class="fm-list-empty">再输入一个字，可搜索全国地名、河流和水库。</div>');
+        this.showList(rows + '<div class="fm-list-empty">再输入一个字，可搜索中国地名、河流和水库。</div>');
         return;
       }
-      function showPlaces(places) {
+      function showPlaces(places, failed) {
         if (seq !== self._searchSeq || self.inputEl.value.trim() !== q) return;
         var found = places.map(function (p) {
           return '<button class="fm-list-item" data-lat="' + p.lat + '" data-lng="' + p.lng +
@@ -1056,74 +1180,68 @@
             '<span class="k">' + esc(p.kind) + '</span><span class="t">' + esc(p.name) + '</span>' +
             '<span class="s">' + esc(p.region) + '</span></button>';
         }).join('');
-        self.showList(rows + (rows && found ? '<div class="fm-list-empty fm-list-heading">地图搜索结果</div>' : '') + found +
-          (places.some(function (p) { return p.source === 'osm'; }) ? '<div class="fm-search-credit">地点数据 © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap 贡献者</a> · Photon</div>' : '') ||
-          '<div class="fm-list-empty">没有找到「' + esc(q) + '」。可加上省市名称再试；公开地图未收录的水域暂时无法搜到。</div>');
+        var empty = failed ? '高德搜索暂时不可用，请稍后重试。' :
+          '没有找到「' + esc(q) + '」，可加上省市名称再试。';
+        self.showList(rows + (rows && found ? '<div class="fm-list-empty fm-list-heading">高德搜索结果</div>' : '') +
+          found + (found ? '<div class="fm-search-credit">地点数据 © 高德地图</div>' : '') +
+          (!rows && !found ? '<div class="fm-list-empty">' + empty + '</div>' : ''));
       }
-      this.showList(rows + '<div class="fm-list-empty">正在搜索中国地名、河流和水库…</div>');
+      this.showList(rows + '<div class="fm-list-empty">正在搜索高德地图…</div>');
       this._placeCache = this._placeCache || new Map();
-      if (this._placeCache.has(q)) { showPlaces(this._placeCache.get(q)); return; }
+      if (this._placeCache.has(q)) { showPlaces(this._placeCache.get(q), false); return; }
+      if (!AMAP_SERVICE_HOST) {
+        this.showList(rows + '<div class="fm-list-empty">高德搜索正在配置中，暂时可搜索已标记的钓点。</div>');
+        return;
+      }
       this._searchTimer = setTimeout(function () {
-        var url = new URL('https://photon.komoot.io/api/');
-        url.searchParams.set('q', q);
-        url.searchParams.set('limit', '20');
-        ['CN', 'HK', 'MO', 'TW'].forEach(function (code) { url.searchParams.append('countrycode', code); });
         var controller = new AbortController();
         self._searchAbort = controller;
-        function cityFallback(serviceFailed) {
-          var cityUrl = 'https://geocoding-api.open-meteo.com/v1/search?name=' + encodeURIComponent(q) +
-            '&count=8&language=zh&format=json&countryCode=CN';
-          fetch(cityUrl, { signal: controller.signal }).then(function (r) {
-            if (!r.ok) throw new Error('城市搜索暂不可用');
+        var base = AMAP_SERVICE_HOST + '/v3/';
+        var params = '&city=' + encodeURIComponent('全国');
+        var urls = [
+          base + 'assistant/inputtips?keywords=' + encodeURIComponent(q) + params,
+          base + 'place/text?keywords=' + encodeURIComponent(q) + params + '&offset=20&page=1'
+        ];
+        function getJson(url) {
+          return fetch(url, { signal: controller.signal }).then(function (r) {
+            if (!r.ok) throw new Error('高德搜索网络错误');
             return r.json();
           }).then(function (data) {
-            var cities = ((data && data.results) || []).filter(function (p) {
-              return isFinite(+p.latitude) && isFinite(+p.longitude);
-            }).map(function (p) {
-              return { name: p.name, kind: '地名', region: [p.admin1, p.admin2].filter(Boolean).join(' · '),
-                lat: +p.latitude, lng: +p.longitude, zoom: 11 };
-            });
-            if (cities.length) { self._placeCache.set(q, cities); showPlaces(cities); }
-            else if (serviceFailed && seq === self._searchSeq && self.inputEl.value.trim() === q)
-              self.showList(rows + '<div class="fm-list-empty">地图搜索暂时连不上；可先拖动地图或点「定位」。</div>');
-            else showPlaces([]);
-          }).catch(function () {
-            if (seq === self._searchSeq && self.inputEl.value.trim() === q)
-              self.showList(rows + '<div class="fm-list-empty">地图搜索暂时连不上；可先拖动地图或点「定位」。</div>');
-          });
+            if (data.status !== '1') throw new Error(data.info || '高德搜索失败');
+            return data;
+          }).catch(function () { return null; });
         }
-        fetch(url.toString(), { signal: controller.signal }).then(function (r) {
-          if (!r.ok) throw new Error('搜索服务返回 ' + r.status);
-          return r.json();
-        }).then(function (data) {
+        Promise.all(urls.map(getJson)).then(function (data) {
+          if (seq !== self._searchSeq || self.inputEl.value.trim() !== q) return;
+          var all = [];
+          ((data[0] && data[0].tips) || []).forEach(function (p) {
+            all.push({ name: p.name, region: p.district || '', location: p.location, kind: p.type || '' });
+          });
+          ((data[1] && data[1].pois) || []).forEach(function (p) {
+            all.push({ name: p.name, region: [p.pname, p.cityname, p.adname].filter(Boolean).join(' · '),
+              location: p.location, kind: p.type || '' });
+          });
           var seen = new Set();
-          var places = ((data && data.features) || []).map(function (f) {
-            var p = f.properties || {}, c = (f.geometry || {}).coordinates || [];
-            var lng = +c[0], lat = +c[1], name = String(p.name || '').trim();
-            if (!name || !isFinite(lat) || !isFinite(lng) || lat < 17 || lat > 55 || lng < 73 || lng > 136 ||
-                ['CN', 'HK', 'MO', 'TW'].indexOf(p.countrycode) < 0) return null;
-            var key = p.osm_key, value = p.osm_value, kind = '地点', zoom = 11;
-            if (value === 'reservoir') { kind = '水库'; zoom = 11; }
-            else if (value === 'river' || key === 'waterway' && value === 'canal') { kind = '河流'; zoom = 8; }
-            else if (value === 'stream') { kind = '溪流'; zoom = 12; }
-            else if (value === 'lake' || key === 'natural' && value === 'water') { kind = '湖泊'; zoom = 11; }
-            else if (key === 'place' || key === 'boundary') kind = '地名';
-            var region = [p.state, p.city || p.county || p.district].filter(function (part, i, all) {
-              return part && part !== name && all.indexOf(part) === i;
-            }).join(' · ');
-            var dedupe = name + '|' + kind + '|' + region;
+          var places = all.map(function (p) {
+            var coords = String(p.location || '').split(',');
+            var lng = +coords[0], lat = +coords[1], name = String(p.name || '').trim();
+            if (!name || coords.length !== 2 || !isFinite(lat) || !isFinite(lng) ||
+                lat < 17 || lat > 55 || lng < 73 || lng > 136) return null;
+            var dedupe = name + '|' + p.region;
             if (seen.has(dedupe)) return null;
             seen.add(dedupe);
-            return { name: name, kind: kind, region: region, lat: lat, lng: lng, zoom: zoom, source: 'osm',
-              score: (name === q ? 100 : name.indexOf(q) >= 0 ? 60 : 0) +
-                (kind === '水库' || kind === '河流' || kind === '湖泊' || kind === '溪流' ? 20 : kind === '地名' ? 10 : 0) };
-          }).filter(Boolean).sort(function (a, b) { return b.score - a.score; }).slice(0, 10);
-          if (!places.length && /[市区县镇]$/.test(q)) cityFallback(false);
-          else { self._placeCache.set(q, places); showPlaces(places); }
-        }).catch(function (err) {
-          if (err && err.name !== 'AbortError' && seq === self._searchSeq) cityFallback(true);
+            var water = /水库|湖|河|江|溪|渠|水系|水域|港/.test(name);
+            var kind = /水库/.test(name) ? '水库' : /湖/.test(name) ? '湖泊' :
+              /河|江|溪|渠/.test(name) ? '河流' : '地点';
+            var wgs = gcj2wgs(lat, lng);
+            return { name: name, kind: kind, region: String(p.region || ''),
+              lat: wgs[0], lng: wgs[1], zoom: water ? 12 : 13,
+              score: (name === q ? 100 : name.indexOf(q) >= 0 ? 60 : 0) + (water ? 20 : 0) };
+          }).filter(Boolean).sort(function (a, b) { return b.score - a.score; }).slice(0, 12);
+          self._placeCache.set(q, places);
+          showPlaces(places, !data[0] && !data[1]);
         });
-      }, 450);
+      }, 350);
     },
 
     showList: function (html) {
@@ -1211,12 +1329,8 @@
       this.currentSpot = s;
       /* 钓点被详情卡挡住时，把地图向左轻推，让图钉露出来 */
       if (this.vw > 760) {
-        var d = this.disp(s.lat, s.lng);
-        var w = project(d[0], d[1], this.zoom);
-        var c = this.disp(this.center.lat, this.center.lng);
-        var cw = project(c[0], c[1], this.zoom);
-        var x = w[0] - cw[0] + this.vw / 2;
-        var y = w[1] - cw[1] + this.vh / 2;
+        var point = this.mapPoint(s.lat, s.lng);
+        var x = point.x, y = point.y;
         if (x > this.vw - 400) this.panBy(-(x - (this.vw - 430)), 0);
         else if (x < 40) this.panBy(40 - x, 0);
         if (y > this.vh - 60) this.panBy(0, -(y - (this.vh - 90)));
@@ -1508,6 +1622,8 @@
     },
     destroy: function () {
       this._destroyed = true;
+      clearTimeout(this._amapTimer);
+      if (this.amap) { try { this.amap.destroy(); } catch (e) {} this.amap = null; }
       this.cancelAnim();
       if (this._ro) this._ro.disconnect();
       this.el.innerHTML = '';
