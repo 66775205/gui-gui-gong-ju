@@ -22,14 +22,20 @@ function reply(body, status, origin) {
 async function amapService(request, env) {
   const url = new URL(request.url);
   const origin = request.headers.get('origin');
-  // 浏览器跨站请求必须来自网站；同源请求没有 Origin 标头。
+  const referer = request.headers.get('referer');
+  let source = origin;
+  if (!source && referer) {
+    try { source = new URL(referer).origin; } catch (_) { source = null; }
+  }
+  const path = url.pathname.slice('/_AMapService'.length);
+  // 地图脚本可能使用 Referer 而不是 Origin；两者都没有时不开放收费接口。
+  if (path !== '/health' && !allowedOrigins.has(source)) return reply('{"error":"forbidden"}', 403, null);
   if (origin && !allowedOrigins.has(origin)) return reply('{"error":"forbidden"}', 403, null);
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: corsHeaders(origin) });
   if (request.method !== 'GET') return reply('{"error":"method not allowed"}', 405, origin);
 
   const jsCode = env.AMAP_JS_CODE;
   const webKey = env.AMAP_WEB_SERVICE_KEY;
-  const path = url.pathname.slice('/_AMapService'.length);
   if (path === '/health') {
     return reply(JSON.stringify({ ready: Boolean(jsCode && webKey) }), 200, origin);
   }

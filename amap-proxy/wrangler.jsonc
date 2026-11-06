@@ -1,6 +1,0 @@
-{
-  "name": "gui-gui-amap-proxy",
-  "main": "./worker.js",
-  "compatibility_date": "2026-11-07",
-  "workers_dev": true
-}

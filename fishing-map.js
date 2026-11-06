@@ -13,7 +13,7 @@
   /* 运行时配置由安全代理提供；Web 服务 Key 和 JsCode 不写入公开仓库。 */
   var AMAP_CONFIG = window.YeluAmapConfig || {};
   var AMAP_JS_KEY = String(AMAP_CONFIG.jsKey || 'fab9921529f325142559a91a9a4146be');
-  var AMAP_SERVICE_HOST = String(AMAP_CONFIG.serviceHost || '').replace(/\/$/, '');
+  var AMAP_SERVICE_HOST = String(AMAP_CONFIG.serviceHost || 'https://gui-gui-amap-proxy-66775205.frolickingquail.chatgpt.site/_AMapService').replace(/\/$/, '');
   var amapLoader = null;
   function loadAMap() {
     if (window.AMap && window.AMap.Map) return Promise.resolve(window.AMap);
