@@ -30,4 +30,4 @@
 - `AMAP_JS_CODE`：与 Web 端 JS API Key 同一行的安全密钥。
 - `AMAP_WEB_SERVICE_KEY`：用于搜索地名、水库和河流的 Web 服务 Key。
 
-网站继续使用 GitHub Pages 地址。代理独立托管于 Sites，只提供 `/_AMapService/*` 接口，不托管网站；本仓库的 `amap-proxy/worker.js` 是其无密钥源码副本。`/_AMapService/health` 返回 `{"ready":true}` 时网页才加载高德地图。GitHub Pages 本身无法运行代理。代理未部署或不可用时，地图自动回退到旧底图。不要把两个服务端凭据写入仓库。
+网站继续使用 GitHub Pages 地址。高德代理独立托管于 Cloudflare Workers，只提供 `/_AMapService/*` 接口，不托管网站；本仓库的 `amap-proxy/worker.js` 是其无密钥源码副本。`/_AMapService/health` 返回 `{"ready":true}` 时网页才加载高德地图。GitHub Pages 本身无法运行代理。代理未部署或不可用时，地图自动回退到旧底图。不要把两个服务端凭据写入仓库。

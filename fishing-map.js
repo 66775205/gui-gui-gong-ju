@@ -13,7 +13,7 @@
   /* 运行时配置由安全代理提供；Web 服务 Key 和 JsCode 不写入公开仓库。 */
   var AMAP_CONFIG = window.YeluAmapConfig || {};
   var AMAP_JS_KEY = String(AMAP_CONFIG.jsKey || 'fab9921529f325142559a91a9a4146be');
-  var AMAP_SERVICE_HOST = String(AMAP_CONFIG.serviceHost || 'https://gui-gui-amap-proxy-66775205.frolickingquail.chatgpt.site/_AMapService').replace(/\/$/, '');
+  var AMAP_SERVICE_HOST = String(AMAP_CONFIG.serviceHost || 'https://gui-gui-amap-proxy-66775205.cloudflare-amap-proxy.workers.dev/_AMapService').replace(/\/$/, '');
   var amapLoader = null;
   function loadAMap() {
     if (window.AMap && window.AMap.Map) return Promise.resolve(window.AMap);
@@ -1178,7 +1178,7 @@
         this.showList(rows + '<div class="fm-list-empty">再输入一个字，可搜索中国地名、河流和水库。</div>');
         return;
       }
-      function showPlaces(places, failed) {
+      function showPlaces(places, failed, reason) {
         if (seq !== self._searchSeq || self.inputEl.value.trim() !== q) return;
         var found = places.map(function (p) {
           return '<button class="fm-list-item" data-lat="' + p.lat + '" data-lng="' + p.lng +
@@ -1186,7 +1186,7 @@
             '<span class="k">' + esc(p.kind) + '</span><span class="t">' + esc(p.name) + '</span>' +
             '<span class="s">' + esc(p.region) + '</span></button>';
         }).join('');
-        var empty = failed ? '高德搜索暂时不可用，请稍后重试。' :
+        var empty = failed ? '高德搜索暂时不可用' + (reason ? '（' + esc(reason) + '）' : '') + '，请稍后重试。' :
           '没有找到「' + esc(q) + '」，可加上省市名称再试。';
         self.showList(rows + (rows && found ? '<div class="fm-list-empty fm-list-heading">高德搜索结果</div>' : '') +
           found + (found ? '<div class="fm-search-credit">地点数据 © 高德地图</div>' : '') +
@@ -1210,15 +1210,18 @@
         ];
         function getJson(url) {
           return fetch(url, { signal: controller.signal }).then(function (r) {
-            if (!r.ok) throw new Error('高德搜索网络错误');
+            if (!r.ok) throw new Error(r.status === 403 ? '搜索连接被拦截 403' : '网络错误 ' + r.status);
             return r.json();
           }).then(function (data) {
             if (data.status !== '1') throw new Error(data.info || '高德搜索失败');
-            return data;
-          }).catch(function () { return null; });
+            return { data: data };
+          }).catch(function (error) {
+            return { error: error instanceof TypeError ? '代理连接被拦截或断开' : (error.message || '网络连接失败') };
+          });
         }
-        Promise.all(urls.map(getJson)).then(function (data) {
+        Promise.all(urls.map(getJson)).then(function (results) {
           if (seq !== self._searchSeq || self.inputEl.value.trim() !== q) return;
+          var data = results.map(function (item) { return item.data || null; });
           var all = [];
           ((data[0] && data[0].tips) || []).forEach(function (p) {
             all.push({ name: p.name, region: p.district || '', location: p.location, kind: p.type || '' });
@@ -1244,10 +1247,11 @@
               lat: wgs[0], lng: wgs[1], zoom: water ? 12 : 13,
               score: (name === q ? 100 : name.indexOf(q) >= 0 ? 60 : 0) + (water ? 20 : 0) };
           }).filter(Boolean).sort(function (a, b) { return b.score - a.score; }).slice(0, 12);
-          self._placeCache.set(q, places);
-          showPlaces(places, !data[0] && !data[1]);
+          var failed = !data[0] && !data[1];
+          if (!failed) self._placeCache.set(q, places);
+          showPlaces(places, failed, failed ? results.map(function (item) { return item.error; }).filter(Boolean)[0] : '');
         });
-      }, 350);
+      }, 650);
     },
 
     showList: function (html) {
