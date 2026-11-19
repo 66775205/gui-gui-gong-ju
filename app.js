@@ -12,7 +12,7 @@ const fish = [
   {name:'黄颡鱼',group:'淡水',habitat:'江河缓流 · 湖库近底',depth:['bottom'],lures:['soft','jighead'],tip:'主要贴底摄食，轻铅软虫沿石缝、岸坎底部慢拖。'},
   {name:'鳡鱼',group:'淡水',habitat:'大江大河 · 水库开阔水面',depth:['surface','mid'],lures:['minnow','pencil','spoon','vib'],tip:'大型掠食鱼，追饵时可用较大米诺或铁板远投搜索。'},
   {name:'白条（䱗）',group:'淡水',habitat:'江河 · 湖库表层',depth:['surface','shallow'],lures:['spoon','minnow','spinner'],tip:'小型饵鱼，使用小尺寸亮片、米诺，轻装备更易操控。'},
-  {name:'罗非鱼',group:'淡水',habitat:'南方池塘 · 缓流水域',depth:['shallow','mid'],lures:['soft','jighead','micro'],tip:'暖水季活性较高；小软虫或微物在岸边结构附近慢跳。'},
+  {name:'吉利慈鲷',group:'淡水',habitat:'南方池塘 · 缓流水域',depth:['shallow','mid'],lures:['soft','jighead','micro'],tip:'暖水季活性较高；小软虫或微物在岸边结构附近慢跳。'},
   {name:'月鳢（七星鱼）',group:'淡水',habitat:'南方池塘 · 沟渠 · 水草区',depth:['shallow','mid'],lures:['soft','frog','minnow'],tip:'常在浅水障碍和水草附近活动，可用小软饵贴边慢搜。'},
   {name:'狗鱼',group:'淡水',habitat:'东北湖泊 · 江河浅湾',depth:['shallow','mid'],lures:['minnow','spinnerbait','spoon','jerkbait'],tip:'伏击性强，草边和湾区可用较大拟饵；注意防咬前导。'},
   {name:'白斑狗鱼（新疆）',group:'淡水',habitat:'新疆额尔齐斯河流域 · 冷水湖河',depth:['shallow','mid','deep'],lures:['minnow','spoon','jerkbait','vib'],tip:'新疆地域性冷水掠食鱼，可用较大米诺或亮片搜索；先确认当地开放水域和垂钓规定。'},
@@ -37,7 +37,7 @@ const fish = [
 const fishRegions = {
  '翘嘴鲌':'both','大口黑鲈（加州鲈）':'both','鳜鱼':'south','乌鳢（黑鱼）':'both',
  '马口鱼':'both','宽鳍鱲（溪哥）':'both','红鳍原鲌（青梢）':'both','蒙古鲌':'north','赤眼鳟（红眼）':'both',
- '鲶鱼':'both','黄颡鱼':'both','鳡鱼':'south','白条（䱗）':'both','罗非鱼':'south',
+ '鲶鱼':'both','黄颡鱼':'both','鳡鱼':'south','白条（䱗）':'both','吉利慈鲷':'south',
  '月鳢（七星鱼）':'south','狗鱼':'north','白斑狗鱼（新疆）':'north','梭鲈（狗鱼鲈）':'north','河鲈':'north',
  '虹鳟':'cold','鳟鱼（褐鳟等）':'cold','鲈鱼（海鲈）':'coast','黑鲷':'coast',
  '石斑鱼':'coast','鲹类（竹荚鱼等）':'coast','鲣鱼':'coast','马鲛（鲅鱼）':'coast',
@@ -61,13 +61,13 @@ const lures = [
  {id:'soft',name:'软虫 / 软饵',en:'SOFT PLASTIC',icon:'∿',depth:['mid','deep','bottom'],waters:['lake','river','pond','coast'],fish:['鳜鱼','大口黑鲈（加州鲈）','鲶鱼','黑鲷','石斑鱼'],method:'沉底后轻抖、拖动或小跳；让软饵贴近结构并保持触底感。',desc:'形态和尺寸多样，可搭配多种钩型与铅重。',color:'清水自然色；浑水高对比',season:['spring','summer','autumn','winter']},
  {id:'jighead',name:'铅头钩 + 软饵',en:'JIGHEAD',icon:'⊙',depth:['mid','deep','bottom'],waters:['river','lake','coast'],fish:['鳜鱼','黄颡鱼','鲶鱼','石斑鱼'],method:'抛投沉底后扬竿小跳，慢收并保持触底；重铅应对急流和深水。',desc:'结构简单、搜索范围广的通用软饵组合。',color:'自然小鱼 / 虾色',season:['spring','autumn']},
  {id:'metaljig',name:'铁板 / 金属饵',en:'METAL JIG',icon:'◆',depth:['mid','deep','bottom'],waters:['coast','river','lake'],fish:['鲣鱼','马鲛（鲅鱼）','带鱼','鲷类（真鲷等）','石斑鱼'],method:'抛投后数秒控制泳层，快速收或抽停；船钓可垂直提放。',desc:'高比重远投或垂直搜索，重量按风、流和水深选。',color:'银色 / 镭射',season:['summer','autumn']},
- {id:'micro',name:'微物饵',en:'MICRO LURE',icon:'·',depth:['surface','shallow','mid'],waters:['stream','river','pond','coast'],fish:['马口鱼','罗非鱼','白条（䱗）','赤眼鳟（红眼）','鲹类（竹荚鱼等）'],method:'轻抛、慢收，必要时加小铅头控制下沉；避免过粗线影响泳姿。',desc:'小尺寸亮片、软饵和米诺的统称，适合轻量装备。',color:'透明 / 银色',season:['spring','summer']},
+ {id:'micro',name:'微物饵',en:'MICRO LURE',icon:'·',depth:['surface','shallow','mid'],waters:['stream','river','pond','coast'],fish:['马口鱼','吉利慈鲷','白条（䱗）','赤眼鳟（红眼）','鲹类（竹荚鱼等）'],method:'轻抛、慢收，必要时加小铅头控制下沉；避免过粗线影响泳姿。',desc:'小尺寸亮片、软饵和米诺的统称，适合轻量装备。',color:'透明 / 银色',season:['spring','summer']},
  {id:'blade',name:'平振亮片',en:'BLADE BAIT',icon:'⌁',depth:['mid','deep','bottom'],waters:['lake','river'],fish:['翘嘴鲌','鳜鱼','鲶鱼'],method:'提竿振动、放线下沉，分层搜索；收紧余线避免触底挂底。',desc:'薄金属振动饵，适合深水和低温时慢速搜索。',color:'银 / 金',season:['autumn','winter']},
  {id:'swimbait',name:'泳饵',en:'SWIMBAIT',icon:'≈',depth:['shallow','mid','deep'],waters:['lake','river','coast'],fish:['大口黑鲈（加州鲈）','鳡鱼','狗鱼','鲈鱼（海鲈）'],method:'匀速慢收为主，间隔短暂停顿；控制速度让饵经过目标层。',desc:'软硬材质皆有，体型与泳层跨度大，适合锁定较大掠食鱼。',color:'匹配当地饵鱼',season:['summer','autumn']},
  {id:'tailspin',name:'旋尾亮片',en:'TAIL SPINNER',icon:'✧',depth:['mid','deep'],waters:['lake','river'],fish:['翘嘴鲌','红鳍原鲌（青梢）','鳡鱼'],method:'远投沉到目标层后匀速收线，也可短抽停顿。',desc:'小体积高比重，兼顾远投、下沉与尾部闪光振动。',color:'银色 / 镭射',season:['autumn','winter']},
  {id:'spintail',name:'旋尾软饵',en:'PADDLE TAIL',icon:'∽',depth:['shallow','mid','deep'],waters:['lake','river','coast'],fish:['鲈鱼（海鲈）','鳜鱼','大口黑鲈（加州鲈）'],method:'匀速收线带动尾部摆动，或沿底层慢拖；按铅头调节下沉。',desc:'尾部产生摆动，适合覆盖不同水层和搜索饵鱼。',color:'银白 / 珍珠白',season:['summer','autumn']},
  {id:'wacky',name:'无铅虫 / Wacky',en:'WACKY RIG',icon:'∩',depth:['shallow','mid'],waters:['lake','pond'],fish:['大口黑鲈（加州鲈）'],method:'无铅或轻铅抛向结构边，等待自由下沉，线动时轻柔扬竿。',desc:'虫体中段挂钩，自由下沉动作自然，适合慢速精细作钓。',color:'绿色南瓜 / 棕色',season:['summer','autumn']},
- {id:'crappie',name:'小型软虫',en:'GRUB / MICRO SOFT',icon:'〰',depth:['shallow','mid','bottom'],waters:['stream','river','pond','lake'],fish:['罗非鱼','黄颡鱼','白条（䱗）','鲹类（竹荚鱼等）'],method:'轻铅头小幅抖动，沿岸边、桥墩和水草边慢慢搜索。',desc:'小体积软饵，可用于微物竿或轻量装备。',color:'白 / 透明 / 虾色',season:['spring','summer']},
+ {id:'crappie',name:'小型软虫',en:'GRUB / MICRO SOFT',icon:'〰',depth:['shallow','mid','bottom'],waters:['stream','river','pond','lake'],fish:['吉利慈鲷','黄颡鱼','白条（䱗）','鲹类（竹荚鱼等）'],method:'轻铅头小幅抖动，沿岸边、桥墩和水草边慢慢搜索。',desc:'小体积软饵，可用于微物竿或轻量装备。',color:'白 / 透明 / 虾色',season:['spring','summer']},
  {id:'swimbait_soft',name:'软式泳饵',en:'SOFT SWIMBAIT',icon:'≈',depth:['mid','deep'],waters:['lake','river','coast'],fish:['鳜鱼','鲈鱼（海鲈）','石斑鱼'],method:'匀速慢收或贴底跳动；钩尖可按障碍情况选择露出或藏钩。',desc:'鱼形软饵搭配铅头钩或曲柄钩，覆盖中底层。',color:'小鱼色 / 珍珠白',season:['summer','autumn']},
  {id:'frog_soft',name:'软蛙',en:'SOFT FROG',icon:'♧',depth:['surface','shallow'],waters:['lake','pond'],fish:['乌鳢（黑鱼）'],method:'贴着草面拖动或轻跳；鱼咬后保持线张力再扬竿。',desc:'柔软蛙形拟饵，可在浮草和障碍边操控。',color:'蛙色 / 黑色',season:['summer']}
 ];
@@ -264,7 +264,7 @@ function buildFishingAdvice({hourly,idx,marine,tide,desc,wind,temp,code,rainNow}
  const waves=marine?.hourly?.wave_height||[],mt=marine?.hourly?.time||[],mi=forecastIndex(mt),waveMax=waves.slice(mi,mi+12).map(Number).filter(Number.isFinite);if($('#waterSelect').value==='coast'&&waveMax.length){const maxWave=Math.max(...waveMax);if(maxWave>2.2){score-=22;reasons.push(`近海模式预报浪高约 ${maxWave.toFixed(1)} m，谨慎评估岸线和出海安全。`);}else if(maxWave>1.2){score-=10;reasons.push(`近海模式浪高约 ${maxWave.toFixed(1)} m，优先选择背浪、避风点。`);}}
  if($('#waterSelect').value==='coast'&&tide.direction!=='淡水'&&tide.direction!=='未知'&&Math.abs(tide.delta)>.06){score+=5;reasons.push(`${tide.direction}，可优先观察潮沟、河口或结构边的饵鱼活动。`);}
  score=Math.max(0,Math.min(100,score));const grade=storm||score<35?'不建议':score<58?'一般':score<78?'可以尝试':'较适合';const water=$('#waterSelect').value;let candidates;
- if(water==='coast')candidates=tide.direction==='涨潮趋势'?['鲈鱼（海鲈）','鲹类（竹荚鱼等）','黑鲷','鲷类（真鲷等）']:['鲈鱼（海鲈）','石斑鱼','马鲛（鲅鱼）','带鱼'];else if(water==='stream')candidates=['马口鱼','宽鳍鱲（溪哥）','虹鳟'];else if(water==='river')candidates=['翘嘴鲌','鳜鱼','红鳍原鲌（青梢）','鲶鱼'];else if(water==='pond')candidates=['大口黑鲈（加州鲈）','乌鳢（黑鱼）','月鳢（七星鱼）','罗非鱼'];else candidates=temp<10?['鳜鱼','鲶鱼','大口黑鲈（加州鲈）','翘嘴鲌']:['翘嘴鲌','大口黑鲈（加州鲈）','鳜鱼','鳡鱼'];if(storm)candidates=candidates.slice(0,2);
+ if(water==='coast')candidates=tide.direction==='涨潮趋势'?['鲈鱼（海鲈）','鲹类（竹荚鱼等）','黑鲷','鲷类（真鲷等）']:['鲈鱼（海鲈）','石斑鱼','马鲛（鲅鱼）','带鱼'];else if(water==='stream')candidates=['马口鱼','宽鳍鱲（溪哥）','虹鳟'];else if(water==='river')candidates=['翘嘴鲌','鳜鱼','红鳍原鲌（青梢）','鲶鱼'];else if(water==='pond')candidates=['大口黑鲈（加州鲈）','乌鳢（黑鱼）','月鳢（七星鱼）','吉利慈鲷'];else candidates=temp<10?['鳜鱼','鲶鱼','大口黑鲈（加州鲈）','翘嘴鲌']:['翘嘴鲌','大口黑鲈（加州鲈）','鳜鱼','鳡鱼'];if(storm)candidates=candidates.slice(0,2);
  const chips=candidates.slice(0,3).map(name=>fish.some(f=>f.name===name)?`<button type="button" class="fish-chip" data-species="${safeText(name)}">${safeText(name)} ↗</button>`:`<span class="fish-chip static">${safeText(name)}</span>`).join('');
  return`<div class="analysis-top"><div><span class="eyebrow">FISHING WINDOW</span><h4>适钓评估</h4></div><div class="fishing-grade ${storm||score<35?'poor':score<58?'fair':score<78?'good':'best'}"><strong>${grade}</strong><span>${score} / 100</span></div></div><p class="analysis-note">按天气、风雨${water==='coast'?'与潮浪趋势':'与所选水域'}做的启发式参考，不代表鱼获保证。</p><ul class="analysis-reasons">${reasons.slice(0,3).map(s=>`<li>${safeText(s)}</li>`).join('')}</ul><div class="species-suggest"><span>可优先考虑</span><div>${chips}</div></div>${storm?'<p class="safety-alert">雷雨、强风或突发涨水时请停止作钓，遵守当地禁钓与海岸安全提示。</p>':''}`;
 }
