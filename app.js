@@ -87,7 +87,8 @@ function lureArt(l){
 }
 function fishArt(f){
  const number=String(fish.indexOf(f)+1).padStart(2,'0');
- return `<div class="fish-art"><img src="./fish-photos-clean/${number}.png" alt="${f.name}实物照片" loading="lazy" decoding="async" title="${f.name} · 用户上传照片"></div>`;
+ const version=number==='01'?'?v=2':'';
+ return `<div class="fish-art"><img src="./fish-photos-clean/${number}.png${version}" alt="${f.name}实物照片" loading="lazy" decoding="async" title="${f.name} · 用户上传照片"></div>`;
 }
 function init(){
  $('#fishSelect').innerHTML=fish.map((f,i)=>`<option value="${i}">${f.name}</option>`).join('');
