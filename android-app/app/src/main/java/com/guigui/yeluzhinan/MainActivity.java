@@ -5,22 +5,28 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.GeolocationPermissions;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collections;
 
 public class MainActivity extends Activity {
-    private static final String HOME = "https://66775205.github.io/gui-gui-gong-ju/";
+    private static final String ASSET_HOST = "appassets.androidplatform.net";
+    private static final String ASSET_ROOT = "https://" + ASSET_HOST + "/assets/";
+    private static final String HOME = ASSET_ROOT + "index.html?android_bundle=1";
     private static final int LOCATION_REQUEST = 1001;
     private static final int FILE_REQUEST = 1002;
     private WebView webView;
@@ -47,17 +53,36 @@ public class MainActivity extends Activity {
         settings.setGeolocationEnabled(true);
         settings.setAllowFileAccess(false);
         settings.setMixedContentMode(WebSettings.MIXED_CONTENT_NEVER_ALLOW);
+        settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
 
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
                 Uri uri = request.getUrl();
-                if (uri.toString().startsWith(HOME)) return false;
+                if (uri.toString().startsWith(ASSET_ROOT)) return false;
                 if ("http".equals(uri.getScheme()) || "https".equals(uri.getScheme())) {
                     startActivity(new Intent(Intent.ACTION_VIEW, uri));
                     return true;
                 }
                 return false;
+            }
+
+            @Override
+            public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+                Uri uri = request.getUrl();
+                if (!"https".equals(uri.getScheme()) || !ASSET_HOST.equals(uri.getHost())) return null;
+                String path = uri.getPath();
+                if (path == null || !path.startsWith("/assets/")) return missingAsset();
+                String name = path.substring("/assets/".length());
+                if (name.isEmpty()) name = "index.html";
+                if (name.contains("..") || name.contains("\\")) return missingAsset();
+                try {
+                    InputStream stream = getAssets().open("site/" + name);
+                    return new WebResourceResponse(mimeType(name), "UTF-8", 200, "OK",
+                        Collections.singletonMap("Cache-Control", "no-store"), stream);
+                } catch (IOException exception) {
+                    return missingAsset();
+                }
             }
 
             @Override
@@ -69,7 +94,8 @@ public class MainActivity extends Activity {
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
             public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
-                if (!HOME.startsWith(origin)) {
+                Uri uri = Uri.parse(origin);
+                if (!"https".equals(uri.getScheme()) || !ASSET_HOST.equals(uri.getHost())) {
                     callback.invoke(origin, false, false);
                     return;
                 }
@@ -98,6 +124,22 @@ public class MainActivity extends Activity {
         });
 
         webView.loadUrl(HOME);
+    }
+
+    private static WebResourceResponse missingAsset() {
+        return new WebResourceResponse("text/plain", "UTF-8", 404, "Not Found",
+            Collections.emptyMap(), new ByteArrayInputStream(new byte[0]));
+    }
+
+    private static String mimeType(String name) {
+        if (name.endsWith(".html")) return "text/html";
+        if (name.endsWith(".css")) return "text/css";
+        if (name.endsWith(".js")) return "text/javascript";
+        if (name.endsWith(".png")) return "image/png";
+        if (name.endsWith(".jpg")) return "image/jpeg";
+        if (name.endsWith(".svg")) return "image/svg+xml";
+        if (name.endsWith(".webmanifest")) return "application/manifest+json";
+        return "application/octet-stream";
     }
 
     private boolean hasLocationPermission() {

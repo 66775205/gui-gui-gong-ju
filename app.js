@@ -78,6 +78,7 @@ const rigs = [
 
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const depthNames={surface:'水面',shallow:'浅层',mid:'中层',deep:'深层',bottom:'贴底'};
+const softRigFish=new Set(['鳜鱼','翘嘴鲌','红鳍原鲌（青梢）','蒙古鲌','乌鳢（黑鱼）']);
 const lureMap=Object.fromEntries(lures.map(x=>[x.id,x]));
 function lureArt(l){
  const order={minnow:1,jerkbait:2,pencil:3,popper:4,frog:5,crank:6,vib:7,spoon:8,spinner:9,spinnerbait:10,buzzbait:11,soft:12,jighead:13,metaljig:14,micro:15,blade:16,swimbait:17,tailspin:18,spintail:19,wacky:20,crappie:21,swimbait_soft:22,frog_soft:23,walkingdog:24};
@@ -101,7 +102,7 @@ function init(){
  $('#fishSearch').addEventListener('input',renderFish);$('#fishGroup').addEventListener('change',renderFish);$('#fishRegion').addEventListener('change',renderFish);
  initForecast();
  $('#waterSelect').addEventListener('change',()=>{if(forecastLocation)loadFishingForecast(forecastLocation);});
- if('serviceWorker' in navigator && location.protocol!=='file:') navigator.serviceWorker.register('./sw.js').catch(()=>{});
+ if('serviceWorker' in navigator && location.protocol!=='file:' && !new URLSearchParams(location.search).has('android_bundle')) navigator.serviceWorker.register('./sw.js').catch(()=>{});
 }
 function showPage(page){
  const target=document.getElementById('page-'+page);
@@ -125,7 +126,15 @@ function recommend(){
   return {...l,score:s};
  }).sort((a,b)=>b.score-a.score||a.name.localeCompare(b.name,'zh-CN'));
  const picked=ranked.slice(0,3);const colors=clarity==='stained'?'亮色 / 强轮廓':clarity==='clear'?'自然色 / 透明':'银白 / 自然色';
+ renderSpeciesRigOptions(f);
  $('#results').innerHTML=picked.map((l,i)=>{const rig=recommendRig(l,{fish:f,water,depth,clarity});return`<article class="result-card ${i===0?'featured':''}"><div class="result-top"><span class="rank">OPTION 0${i+1}</span></div><div class="result-art">${lureArt(l)}</div><h3>${l.name}</h3><span class="result-type">${l.en}</span><div class="result-depth"><b>${l.depth.map(x=>depthNames[x]).join(' / ')}</b> 推荐经过：${depthNames[depth]||'中层'}</div><p>${l.method}</p><div class="result-rig"><span class="result-rig-label">推荐钓组</span><strong>${rig.name}</strong><span>${rig.setup}</span><small>${rig.use}</small></div><div class="result-meta"><span>建议配色：${colors}</span></div></article>`;}).join('');
+}
+function renderSpeciesRigOptions(f){
+ const container=$('#speciesRigOptions');
+ if(!softRigFish.has(f.name)){container.hidden=true;container.innerHTML='';return;}
+ const options=['德州钓组','卡罗莱纳钓组'].map(name=>rigs.find(r=>r[0]===name));
+ container.innerHTML=`<div class="species-rig-heading"><strong>${f.name} · 软饵钓组</strong><span>软饵搜索近底或障碍时选用；硬饵仍按下方卡片搭配。</span></div><div class="species-rig-grid">${options.map(r=>`<article><h4>${r[0]}</h4><p>${r[1]}</p><small>${r[2]}</small></article>`).join('')}</div>`;
+ container.hidden=false;
 }
 function recommendRig(l,{fish:target,water,depth,clarity}){
  const listed=name=>{const r=rigs.find(item=>item[0]===name);return{name:r[0],setup:r[1],use:r[2]};};

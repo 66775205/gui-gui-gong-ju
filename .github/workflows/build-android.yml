@@ -7,6 +7,15 @@ on:
     paths:
       - 'android-app/**'
       - '.github/workflows/build-android.yml'
+      - '*.html'
+      - '*.css'
+      - '*.js'
+      - '*.webmanifest'
+      - '*.png'
+      - '*.jpg'
+      - '*.svg'
+      - 'lure-photos-clean/**'
+      - 'fish-photos-clean/**'
 
 jobs:
   build:
