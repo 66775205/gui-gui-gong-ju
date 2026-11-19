@@ -120,9 +120,26 @@ function recommend(){
   return {...l,score:s};
  }).sort((a,b)=>b.score-a.score||a.name.localeCompare(b.name,'zh-CN'));
  const picked=ranked.slice(0,3);const colors=clarity==='stained'?'亮色 / 强轮廓':clarity==='clear'?'自然色 / 透明':'银白 / 自然色';
- $('#results').innerHTML=picked.map((l,i)=>`<article class="result-card ${i===0?'featured':''}"><div class="result-top"><span class="rank">OPTION 0${i+1}</span><span class="score">匹配 ${Math.min(98,72+l.score*2)}%</span></div><div class="result-art">${lureArt(l)}</div><h3>${l.name}</h3><span class="result-type">${l.en}</span><div class="result-depth"><b>${l.depth.map(x=>depthNames[x]).join(' / ')}</b> 推荐经过：${depthNames[depth]||'中层'}</div><p>${l.method}</p><div class="result-meta"><span>钓组：${rigFor(l)}</span><span>配色：${colors}</span></div></article>`).join('');
+ $('#results').innerHTML=picked.map((l,i)=>{const rig=recommendRig(l,{fish:f,water,depth,clarity});return`<article class="result-card ${i===0?'featured':''}"><div class="result-top"><span class="rank">OPTION 0${i+1}</span><span class="score">匹配 ${Math.min(98,72+l.score*2)}%</span></div><div class="result-art">${lureArt(l)}</div><h3>${l.name}</h3><span class="result-type">${l.en}</span><div class="result-depth"><b>${l.depth.map(x=>depthNames[x]).join(' / ')}</b> 推荐经过：${depthNames[depth]||'中层'}</div><p>${l.method}</p><div class="result-rig"><span class="result-rig-label">推荐钓组</span><strong>${rig.name}</strong><span>${rig.setup}</span><small>${rig.use}</small></div><div class="result-meta"><span>建议配色：${colors}</span></div></article>`;}).join('');
 }
-function rigFor(l){if(l.id==='frog'||l.id==='frog_soft')return'雷蛙直连';if(l.id==='soft'||l.id==='wacky'||l.id==='swimbait_soft')return l.id==='wacky'?'Wacky':'德州 / 倒吊';if(l.id==='jighead'||l.id==='crappie'||l.id==='spintail')return'铅头钩';if(l.id==='metaljig')return'铁板组';if(l.id==='spinnerbait'||l.id==='buzzbait')return'直连';return'别针 / 直连';}
+function recommendRig(l,{fish:target,water,depth,clarity}){
+ const listed=name=>{const r=rigs.find(item=>item[0]===name);return{name:r[0],setup:r[1],use:r[2]};};
+ let rig;
+ if(l.id==='frog'||l.id==='frog_soft')rig=listed('雷蛙组');
+ else if(l.id==='wacky')rig=listed('Wacky 钓组');
+ else if(l.id==='soft')rig=depth==='bottom'?listed('德州钓组'):(depth==='deep'?listed('倒吊钓组'):(clarity==='clear'?listed('无铅钓组'):listed('铅头钩钓组')));
+ else if(l.id==='swimbait_soft'||l.id==='spintail')rig=depth==='bottom'?listed('铅头钩钓组'):listed('铅头钩泳层组');
+ else if(l.id==='jighead'||l.id==='crappie')rig=listed('铅头钩钓组');
+ else if(l.id==='metaljig')rig=listed('铁板组');
+ else if(l.id==='spinnerbait')rig=listed('复合亮片组');
+ else if(l.id==='buzzbait')rig={name:'水面拖拉机直连组',setup:'前导线直接系饵头，保持叶片在水面连续转动。',use:'草边、浅湾与活跃鱼的水面搜索。'};
+ else if(l.id==='spinner')rig={name:'旋转亮片组',setup:'前导线 + 小型转环或别针 + 旋转亮片，减少线体扭转。',use:'溪流、河流的浅层与流边搜索。'};
+ else if(l.id==='micro')rig={name:'微物轻量组',setup:'细线 + 轻量前导 + 小号别针或直结，避免过重连接件影响泳姿。',use:'小型鱼、清水与轻量拟饵。'};
+ else if(l.id==='swimbait')rig={name:'泳饵直连组',setup:'前导线 + 与饵重匹配的结或结实别针，确认钩环强度。',use:'中大型掠食鱼与较大泳饵。'};
+ else rig={name:'硬饵直连组',setup:'主线接前导线，再用小号别针或直接系饵头，保持拟饵动作。',use:water==='stream'?'溪流轻饵优先选小号连接件。':'按目标水层控制收线和下沉时间。'};
+ if(/狗鱼|马鲛|带鱼/.test(target.name))rig={...rig,setup:`${rig.setup} 遇利齿鱼加防咬前导。`};
+ return rig;
+}
 function renderLures(){const q=$('#lureSearch').value.trim().toLowerCase(),d=$('#lureFilter').value;const list=lures.filter(l=>(d==='all'||l.depth.includes(d))&&(!q||(l.name+l.en+l.desc+l.method).toLowerCase().includes(q)));$('#lureShown').textContent=`${list.length} / ${lures.length}`;$('#lureGrid').innerHTML=list.map(l=>`<article class="library-card"><div class="library-top"><div class="library-art">${lureArt(l)}</div><div class="tags">${l.depth.map(x=>`<span class="tag">${depthNames[x]}</span>`).join('')}</div></div><h3>${l.name}</h3><span class="english">${l.en}</span><p>${l.desc}</p></article>`).join('')||'<p class="small-note">没有找到符合条件的饵型。</p>';}
 function renderFish(){const q=$('#fishSearch').value.trim().toLowerCase(),g=$('#fishGroup').value,r=$('#fishRegion').value;const list=fish.filter(f=>{const region=fishRegions[f.name]||'both';return(g==='all'||f.group===g)&&(r==='all'||region===r)&&(!q||(f.name+f.habitat+f.tip+(fishRegionNames[region]||'')).toLowerCase().includes(q));});$('#fishShown').textContent=`${list.length} / ${fish.length}`;$('#fishGrid').innerHTML=list.map((f,i)=>{const region=fishRegions[f.name]||'both';return`<article class="fish-card" data-fish="${fish.indexOf(f)}"><span class="fish-no">${String(i+1).padStart(2,'0')} · ${f.group}</span><span class="fish-region">${fishRegionNames[region]}</span><h3>${f.name}</h3><p>${f.tip}</p><div class="habitat">${f.habitat}</div></article>`;}).join('')||'<p class="small-note">没有找到符合条件的鱼种。</p>';$$('.fish-card').forEach(c=>c.addEventListener('click',()=>{ $('#fishSelect').value=c.dataset.fish;showPage('recommend');recommend();}));}
 function renderRigs(){$('#rigGrid').innerHTML=rigs.map((r,i)=>`<article class="rig-card"><span class="rig-number">RIG / ${String(i+1).padStart(2,'0')}</span><h3>${r[0]}</h3><p>${r[1]}</p><span class="rig-use">${r[2]}</span></article>`).join('');}

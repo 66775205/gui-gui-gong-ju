@@ -12,7 +12,7 @@
   <link rel="icon" href="icon.svg?v=7" type="image/svg+xml">
   <link rel="apple-touch-icon" href="apple-touch-icon.png?v=7">
   <link rel="stylesheet" href="style.css?v=21">
-  <link rel="stylesheet" href="visual-refresh.css?v=6">
+  <link rel="stylesheet" href="visual-refresh.css?v=7">
   <title>路亚指南｜看鱼情选饵</title>
 </head>
 <body>
@@ -62,7 +62,8 @@
         <label class="field"><span>水体能见度</span><select id="claritySelect"><option value="clear">清澈 · 能见度高</option><option value="normal" selected>一般</option><option value="stained">浑水 / 能见度低</option></select></label>
         <label class="field"><span>季节</span><select id="seasonSelect"><option value="spring">春</option><option value="summer" selected>夏</option><option value="autumn">秋</option><option value="winter">冬</option></select></label>
       </div>
-      <div class="action-row"><button id="recommendBtn" class="primary-button">给我选饵</button><span class="hint">按当前条件生成 3 个起手方案</span></div>
+      <div class="action-row"><button id="recommendBtn" class="primary-button">给我选饵和钓组</button><span class="hint">按当前条件生成 3 个起手方案</span></div>
+      <div class="recommend-result-heading"><h3>拟饵与钓组建议</h3><span>每种拟饵都有对应的钓组搭配</span></div>
       <div id="results" class="results" aria-live="polite"></div>
       <div class="principle"><div><strong>先找水层，再换饵型</strong><p>先确认鱼在哪里，再让拟饵经过它的视线范围。饵的颜色和动作是第二步。</p></div></div>
     </section>
@@ -85,6 +86,6 @@
   </nav>
   <script src="china-cities.js?v=1"></script>
   <script src="china-districts.js?v=1"></script>
-  <script src="app.js?v=30"></script>
+  <script src="app.js?v=31"></script>
 </body>
 </html>
