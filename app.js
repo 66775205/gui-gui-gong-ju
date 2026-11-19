@@ -1,6 +1,6 @@
 const fish = [
   {name:'翘嘴鲌',group:'淡水',habitat:'湖库 · 江河开阔水面',depth:['surface','mid'],lures:['minnow','pencil','walkingdog','vib','spoon'],tip:'追逐小鱼，留意炸水、明水与洄水湾；中上层搜索。'},
-  {name:'大口黑鲈（加州鲈）',group:'淡水',habitat:'湖库 · 池塘 · 水草边',depth:['surface','shallow','mid','bottom'],lures:['crank','soft','spinnerbait','jerkbait','frog','walkingdog'],tip:'覆盖水草、岸边、倒木与落差；按结构选择防挂钓组。'},
+  {name:'大口黑鲈（加州鲈）',group:'淡水',habitat:'湖库 · 池塘 · 水草边',depth:['surface','shallow','mid','bottom'],lures:['crank','soft','wacky','spinnerbait','jerkbait','frog','walkingdog'],tip:'覆盖水草、岸边、倒木与落差；按结构选择防挂钓组。'},
   {name:'鳜鱼',group:'淡水',habitat:'江河 · 水库 · 石结构',depth:['bottom','mid'],lures:['soft','jighead','vib','minnow'],tip:'伏击型鱼，重点搜石坎、桥墩、乱石底与深浅交界。'},
   {name:'乌鳢（黑鱼）',group:'淡水',habitat:'池塘 · 湖库浅滩水草区',depth:['surface','shallow'],lures:['frog','soft','buzzbait'],tip:'暖季常巡水草与障碍边；雷蛙贴草洞、草边慢搜。'},
   {name:'马口鱼',group:'淡水',habitat:'溪流 · 山涧浅滩',depth:['surface','shallow'],lures:['spoon','minnow','spinner','walkingdog'],tip:'逆流抛投或横切水流，轻饵快速搜索浅滩与流边。'},
@@ -66,7 +66,7 @@ const lures = [
  {id:'swimbait',name:'泳饵',en:'SWIMBAIT',icon:'≈',depth:['shallow','mid','deep'],waters:['lake','river','coast'],fish:['大口黑鲈（加州鲈）','鳡鱼','狗鱼','鲈鱼（海鲈）'],method:'匀速慢收为主，间隔短暂停顿；控制速度让饵经过目标层。',desc:'软硬材质皆有，体型与泳层跨度大，适合锁定较大掠食鱼。',color:'匹配当地饵鱼',season:['summer','autumn']},
  {id:'tailspin',name:'旋尾亮片',en:'TAIL SPINNER',icon:'✧',depth:['mid','deep'],waters:['lake','river'],fish:['翘嘴鲌','红鳍原鲌（青梢）','鳡鱼'],method:'远投沉到目标层后匀速收线，也可短抽停顿。',desc:'小体积高比重，兼顾远投、下沉与尾部闪光振动。',color:'银色 / 镭射',season:['autumn','winter']},
  {id:'spintail',name:'旋尾软饵',en:'PADDLE TAIL',icon:'∽',depth:['shallow','mid','deep'],waters:['lake','river','coast'],fish:['鲈鱼（海鲈）','鳜鱼','大口黑鲈（加州鲈）'],method:'匀速收线带动尾部摆动，或沿底层慢拖；按铅头调节下沉。',desc:'尾部产生摆动，适合覆盖不同水层和搜索饵鱼。',color:'银白 / 珍珠白',season:['summer','autumn']},
- {id:'wacky',name:'Wacky / 无铅虫',en:'WACKY RIG',icon:'∩',depth:['shallow','mid'],waters:['lake','pond'],fish:['大口黑鲈（加州鲈）'],method:'无铅或轻铅抛向结构边，等待自由下沉，线动时轻柔扬竿。',desc:'虫体中段挂钩，自由下沉动作自然，适合慢速精细作钓。',color:'绿色南瓜 / 棕色',season:['summer','autumn']},
+ {id:'wacky',name:'无铅虫 / Wacky',en:'WACKY RIG',icon:'∩',depth:['shallow','mid'],waters:['lake','pond'],fish:['大口黑鲈（加州鲈）'],method:'无铅或轻铅抛向结构边，等待自由下沉，线动时轻柔扬竿。',desc:'虫体中段挂钩，自由下沉动作自然，适合慢速精细作钓。',color:'绿色南瓜 / 棕色',season:['summer','autumn']},
  {id:'crappie',name:'小型软虫',en:'GRUB / MICRO SOFT',icon:'〰',depth:['shallow','mid','bottom'],waters:['stream','river','pond','lake'],fish:['罗非鱼','黄颡鱼','白条（䱗）','鲹类（竹荚鱼等）'],method:'轻铅头小幅抖动，沿岸边、桥墩和水草边慢慢搜索。',desc:'小体积软饵，可用于微物竿或轻量装备。',color:'白 / 透明 / 虾色',season:['spring','summer']},
  {id:'swimbait_soft',name:'软式泳饵',en:'SOFT SWIMBAIT',icon:'≈',depth:['mid','deep'],waters:['lake','river','coast'],fish:['鳜鱼','鲈鱼（海鲈）','石斑鱼'],method:'匀速慢收或贴底跳动；钩尖可按障碍情况选择露出或藏钩。',desc:'鱼形软饵搭配铅头钩或曲柄钩，覆盖中底层。',color:'小鱼色 / 珍珠白',season:['summer','autumn']},
  {id:'frog_soft',name:'软蛙',en:'SOFT FROG',icon:'♧',depth:['surface','shallow'],waters:['lake','pond'],fish:['乌鳢（黑鱼）'],method:'贴着草面拖动或轻跳；鱼咬后保持线张力再扬竿。',desc:'柔软蛙形拟饵，可在浮草和障碍边操控。',color:'蛙色 / 黑色',season:['summer']}
