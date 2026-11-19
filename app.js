@@ -85,6 +85,10 @@ function lureArt(l){
  const src=`./lure-photos-clean/${number}.png`;
  return `<img class="lure-photo" src="${src}" alt="${l.name}实物照片" loading="lazy" decoding="async" title="${l.name} · 用户上传照片">`;
 }
+function fishArt(f){
+ const number=String(fish.indexOf(f)+1).padStart(2,'0');
+ return `<div class="fish-art"><img src="./fish-photos-clean/${number}.png" alt="${f.name}实物照片" loading="lazy" decoding="async" title="${f.name} · 用户上传照片"></div>`;
+}
 function init(){
  $('#fishSelect').innerHTML=fish.map((f,i)=>`<option value="${i}">${f.name}</option>`).join('');
  $('#fishCount').textContent=fish.length;$('#lureCount').textContent=lures.length;
@@ -141,7 +145,7 @@ function recommendRig(l,{fish:target,water,depth,clarity}){
  return rig;
 }
 function renderLures(){const q=$('#lureSearch').value.trim().toLowerCase(),d=$('#lureFilter').value;const list=lures.filter(l=>(d==='all'||l.depth.includes(d))&&(!q||(l.name+l.en+l.desc+l.method).toLowerCase().includes(q)));$('#lureShown').textContent=`${list.length} / ${lures.length}`;$('#lureGrid').innerHTML=list.map(l=>`<article class="library-card"><div class="library-top"><div class="library-art">${lureArt(l)}</div><div class="tags">${l.depth.map(x=>`<span class="tag">${depthNames[x]}</span>`).join('')}</div></div><h3>${l.name}</h3><span class="english">${l.en}</span><p>${l.desc}</p></article>`).join('')||'<p class="small-note">没有找到符合条件的饵型。</p>';}
-function renderFish(){const q=$('#fishSearch').value.trim().toLowerCase(),g=$('#fishGroup').value,r=$('#fishRegion').value;const list=fish.filter(f=>{const region=fishRegions[f.name]||'both';return(g==='all'||f.group===g)&&(r==='all'||region===r)&&(!q||(f.name+f.habitat+f.tip+(fishRegionNames[region]||'')).toLowerCase().includes(q));});$('#fishShown').textContent=`${list.length} / ${fish.length}`;$('#fishGrid').innerHTML=list.map((f,i)=>{const region=fishRegions[f.name]||'both';return`<article class="fish-card" data-fish="${fish.indexOf(f)}"><span class="fish-no">${String(i+1).padStart(2,'0')} · ${f.group}</span><span class="fish-region">${fishRegionNames[region]}</span><h3>${f.name}</h3><p>${f.tip}</p><div class="habitat">${f.habitat}</div></article>`;}).join('')||'<p class="small-note">没有找到符合条件的鱼种。</p>';$$('.fish-card').forEach(c=>c.addEventListener('click',()=>{ $('#fishSelect').value=c.dataset.fish;showPage('recommend');recommend();}));}
+function renderFish(){const q=$('#fishSearch').value.trim().toLowerCase(),g=$('#fishGroup').value,r=$('#fishRegion').value;const list=fish.filter(f=>{const region=fishRegions[f.name]||'both';return(g==='all'||f.group===g)&&(r==='all'||region===r)&&(!q||(f.name+f.habitat+f.tip+(fishRegionNames[region]||'')).toLowerCase().includes(q));});$('#fishShown').textContent=`${list.length} / ${fish.length}`;$('#fishGrid').innerHTML=list.map(f=>{const index=fish.indexOf(f),region=fishRegions[f.name]||'both';return`<article class="fish-card" data-fish="${index}"><span class="fish-no">${String(index+1).padStart(2,'0')} · ${f.group}</span><span class="fish-region">${fishRegionNames[region]}</span>${fishArt(f)}<h3>${f.name}</h3><p>${f.tip}</p><div class="habitat">${f.habitat}</div></article>`;}).join('')||'<p class="small-note">没有找到符合条件的鱼种。</p>';$$('.fish-card').forEach(c=>c.addEventListener('click',()=>{ $('#fishSelect').value=c.dataset.fish;showPage('recommend');recommend();}));}
 function renderRigs(){$('#rigGrid').innerHTML=rigs.map((r,i)=>`<article class="rig-card"><span class="rig-number">RIG / ${String(i+1).padStart(2,'0')}</span><h3>${r[0]}</h3><p>${r[1]}</p><span class="rig-use">${r[2]}</span></article>`).join('');}
 let forecastLocation=null;
 const chinaCountryCodes=new Set(['CN','HK','MO','TW']);

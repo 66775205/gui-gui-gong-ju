@@ -220,6 +220,9 @@ main .page{max-width:1280px;padding:56px clamp(24px,5vw,64px) 72px}
 .fish-card.selected{border-color:#a5ca81;background:#f8fbed}
 .fish-card h3,.rig-card h3{font-size:17px}
 .fish-card p,.rig-card p{font-size:11px}
+.fish-art{height:142px;display:flex;align-items:center;justify-content:center;overflow:hidden;margin-top:13px;border-radius:12px;background:#e8e9df}
+.fish-art img{display:block;width:100%;height:100%;padding:7px;object-fit:contain;filter:drop-shadow(0 7px 6px rgba(37,45,32,.14))}
+.fish-card h3{margin-top:12px}
 .fish-region,.rig-use{border-radius:999px}
 .source-box{max-width:1152px;border-top-color:#d6dfd2}
 footer{padding-top:31px;padding-bottom:31px}
@@ -275,6 +278,8 @@ footer{padding-top:31px;padding-bottom:31px}
   .library-card p{font-size:9px;line-height:1.55;margin:8px 2px 0}
   .fish-grid,.rig-grid{gap:9px}
   .fish-card,.rig-card{border-radius:13px}
+  .fish-art{height:104px;margin-top:10px;border-radius:9px}
+  .fish-art img{padding:5px}
   .mobile-nav{height:calc(73px + env(safe-area-inset-bottom));background:rgba(255,254,250,.97);box-shadow:0 -10px 30px rgba(27,55,39,.09)}
   .mobile-nav button{font-size:9px;gap:2px;padding-top:4px}
   .mobile-nav button svg{width:32px;height:32px;padding:5px;border-radius:11px}
