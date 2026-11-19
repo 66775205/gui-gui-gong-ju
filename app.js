@@ -252,36 +252,3 @@ function buildFishingAdvice({hourly,idx,marine,tide,desc,wind,temp,code,rainNow}
  return`<div class="analysis-top"><div><span class="eyebrow">FISHING WINDOW</span><h4>适钓评估</h4></div><div class="fishing-grade ${storm||score<35?'poor':score<58?'fair':score<78?'good':'best'}"><strong>${grade}</strong><span>${score} / 100</span></div></div><p class="analysis-note">按天气、风雨${water==='coast'?'与潮浪趋势':'与所选水域'}做的启发式参考，不代表鱼获保证。</p><ul class="analysis-reasons">${reasons.slice(0,3).map(s=>`<li>${safeText(s)}</li>`).join('')}</ul><div class="species-suggest"><span>可优先考虑</span><div>${chips}</div></div>${storm?'<p class="safety-alert">雷雨、强风或突发涨水时请停止作钓，遵守当地禁钓与海岸安全提示。</p>':''}`;
 }
 init();
-
-/* 钓点地图与天气、选饵建议联动。 */
-window.LureSiteHooks={
- showSpotWeather(loc){
-  if(!loc||!Number.isFinite(loc.lat)||!Number.isFinite(loc.lng))return;
-  const water=loc.water||'lake';
-  if($('#waterSelect')&&['lake','river','pond','coast','stream'].includes(water))$('#waterSelect').value=water;
-  showPage('recommend');
-  // The built-in sample spots are curated China locations. User markers need a city choice.
-  const province=(loc.region||'').split(' · ')[0];
-  const knownProvince=chinaCities.some(city=>city[3]==='CN'&&city[1].startsWith(province));
-  if(loc.demo&&!loc.mine&&province&&knownProvince){
-   forecastLocation={latitude:loc.lat,longitude:loc.lng,name:loc.name||'所选钓点',countryCode:'CN'};
-   $('#locationInput').value='';
-   loadFishingForecast(forecastLocation);
-   return;
-  }
-  forecastLocation=null;
-  $('#forecastContent').hidden=true;
-  $('#locationInput').value='';
-  setForecastStatus(`已选择钓点「${loc.name||'所选钓点'}」。请在上方选择中国城市查询天气。`);
-  $('#locationInput').focus();
- },
- showSpotLure(detail){
-  if(!detail)return;
-  const water=detail.water||'lake';
-  if($('#waterSelect')&&['lake','river','pond','coast','stream'].includes(water))$('#waterSelect').value=water;
-  const i=fish.findIndex(f=>f.name===detail.fishName);
-  if(i>=0&&$('#fishSelect'))$('#fishSelect').value=i;
-  showPage('recommend');
-  recommend();
- }
-};

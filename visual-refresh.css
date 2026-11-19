@@ -71,8 +71,6 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,su
 .hero-shortcut:hover{transform:translateY(-3px)}
 .hero-shortcut-primary{background:var(--green);border-color:var(--green);color:var(--ink);box-shadow:0 8px 26px rgba(160,218,98,.18)}
 .hero-shortcut-primary:hover{background:#daf5a5}
-.hero-shortcut-secondary{background:rgba(255,255,255,.06);color:#f5f9ef;backdrop-filter:blur(6px)}
-.hero-shortcut-secondary:hover{background:rgba(255,255,255,.14)}
 .hero-proof{display:flex;flex-wrap:wrap;gap:0;margin-top:36px;color:#afc2b2;font-size:11px;letter-spacing:.02em}
 .hero-proof span{padding:0 17px;border-left:1px solid rgba(210,238,202,.28)}
 .hero-proof span:first-child{padding-left:0;border-left:0}
