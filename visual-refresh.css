@@ -304,6 +304,8 @@ footer{padding-top:31px;padding-bottom:31px}
   .mobile-nav button{font-size:9px;gap:2px;padding-top:4px}
   .mobile-nav button svg{width:32px;height:32px;padding:5px;border-radius:11px}
   .mobile-nav button.active svg{background:#e4f2cf;color:#4e8a41;stroke-width:1.9}
+  .mobile-nav button svg .nav-icon-tint{fill:currentColor;fill-opacity:.15;stroke:none}
+  .mobile-nav button.active svg .nav-icon-tint{fill-opacity:.25}
   footer{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 }
 
