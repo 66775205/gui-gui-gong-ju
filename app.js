@@ -133,7 +133,7 @@ function recommend(){
  }).sort((a,b)=>b.score-a.score||a.name.localeCompare(b.name,'zh-CN'));
  const picked=ranked.slice(0,3);const colors=clarity==='stained'?'亮色 / 强轮廓':clarity==='clear'?'自然色 / 透明':'银白 / 自然色';
  renderSpeciesRigOptions(f);
- $('#results').innerHTML=picked.map((l,i)=>{const rig=recommendRig(l,{fish:f,water,depth,clarity});return`<article class="result-card ${i===0?'featured':''}"><div class="result-top"><span class="rank">OPTION 0${i+1}</span></div><div class="result-art">${lureArt(l)}</div><h3>${l.name}</h3><span class="result-type">${l.en}</span><div class="result-depth"><b>${l.depth.map(x=>depthNames[x]).join(' / ')}</b> 推荐经过：${depthNames[depth]||'中层'}</div><p>${l.method}</p><div class="result-rig"><span class="result-rig-label">推荐钓组</span>${rigArt(rig.name,'rig-art-compact')}<strong>${rig.name}</strong><span>${rig.setup}</span><small>${rig.use}</small></div><div class="result-meta"><span>建议配色：${colors}</span></div></article>`;}).join('');
+ $('#results').innerHTML=picked.map((l,i)=>{const rig=recommendRig(l,{fish:f,water,depth,clarity});return`<article class="result-card ${i===0?'featured':''}"><div class="result-art">${lureArt(l)}</div><h3>${l.name}</h3><span class="result-type">${l.en}</span><div class="result-depth"><b>${l.depth.map(x=>depthNames[x]).join(' / ')}</b> 推荐经过：${depthNames[depth]||'中层'}</div><p>${l.method}</p><div class="result-rig"><span class="result-rig-label">推荐钓组</span>${rigArt(rig.name,'rig-art-compact')}<strong>${rig.name}</strong><span>${rig.setup}</span><small>${rig.use}</small></div><div class="result-meta"><span>建议配色：${colors}</span></div></article>`;}).join('');
 }
 function renderSpeciesRigOptions(f){
  const container=$('#speciesRigOptions');
@@ -172,7 +172,7 @@ const cityOptionLabel=city=>[city[0],city[2],city[1]].filter((name,index,names)=
 const cityByLabel=new Map(chinaPlaces.map(city=>[cityOptionLabel(city),city]));
 function withinChinaBounds(latitude,longitude){return Number.isFinite(latitude)&&Number.isFinite(longitude)&&latitude>=18&&latitude<=54&&longitude>=73&&longitude<=135.2;}
 const weatherText={0:'晴朗',1:'大部晴朗',2:'局部多云',3:'阴天',45:'有雾',48:'雾凇',51:'毛毛雨',53:'小雨',55:'中雨',56:'冻毛毛雨',57:'冻毛毛雨',61:'小雨',63:'中雨',65:'大雨',66:'冻雨',67:'冻雨',71:'小雪',73:'中雪',75:'大雪',77:'雪粒',80:'零星阵雨',81:'阵雨',82:'强阵雨',85:'阵雪',86:'强阵雪',95:'雷雨',96:'雷雨伴冰雹',99:'强雷雨伴冰雹'};
-const weatherGlyph={晴朗:'☀',大部晴朗:'☀',局部多云:'◐',阴天:'☁',有雾:'≋',雾凇:'≋',小雨:'☂',中雨:'☂',大雨:'☂',阵雨:'☂',零星阵雨:'☂',强阵雨:'☂',雷雨:'⚡',强雷雨:'⚡'};
+const weatherGlyph={晴朗:'☀',大部晴朗:'☀',局部多云:'⛅',阴天:'☁',有雾:'≋',雾凇:'≋',小雨:'☂',中雨:'☂',大雨:'☂',阵雨:'☂',零星阵雨:'☂',强阵雨:'☂',雷雨:'⚡',强雷雨:'⚡'};
 function initForecast(){
  const cityList=$('#chinaCityList');
  if(cityList)cityList.innerHTML=chinaPlaces.map(place=>`<option value="${safeText(cityOptionLabel(place))}"></option>`).join('');
@@ -283,9 +283,9 @@ function buildFishingAdvice({hourly,idx,marine,tide,desc,wind,temp,code,rainNow}
  if(Number.isFinite(temp)){if(temp<5||temp>33){score-=12;reasons.push('气温偏冷/偏热，鱼可能降低活动范围，放慢搜索节奏。');}else if(temp>=10&&temp<=28){score+=4;reasons.push('气温处于较温和区间，可先搜索鱼群活动水层。');}}
  const waves=marine?.hourly?.wave_height||[],mt=marine?.hourly?.time||[],mi=forecastIndex(mt),waveMax=waves.slice(mi,mi+12).map(Number).filter(Number.isFinite);if($('#waterSelect').value==='coast'&&waveMax.length){const maxWave=Math.max(...waveMax);if(maxWave>2.2){score-=22;reasons.push(`近海模式预报浪高约 ${maxWave.toFixed(1)} m，谨慎评估岸线和出海安全。`);}else if(maxWave>1.2){score-=10;reasons.push(`近海模式浪高约 ${maxWave.toFixed(1)} m，优先选择背浪、避风点。`);}}
  if($('#waterSelect').value==='coast'&&tide.direction!=='淡水'&&tide.direction!=='未知'&&Math.abs(tide.delta)>.06){score+=5;reasons.push(`${tide.direction}，可优先观察潮沟、河口或结构边的饵鱼活动。`);}
- score=Math.max(0,Math.min(100,score));const grade=storm||score<35?'不建议':score<58?'一般':score<78?'可以尝试':'较适合';const water=$('#waterSelect').value;let candidates;
+ score=Math.max(0,Math.min(100,score));const grade=storm||score<35?'不建议':score<58?'一般':score<78?'可以尝试':'';const water=$('#waterSelect').value;let candidates;
  if(water==='coast')candidates=tide.direction==='涨潮趋势'?['鲈鱼（海鲈）','鲹类（竹荚鱼等）','黑鲷','鲷类（真鲷等）']:['鲈鱼（海鲈）','石斑鱼','马鲛（鲅鱼）','带鱼'];else if(water==='stream')candidates=['马口鱼','宽鳍鱲（溪哥）','虹鳟'];else if(water==='river')candidates=['翘嘴鲌','鳜鱼','红鳍原鲌（青梢）','鲶鱼'];else if(water==='pond')candidates=['大口黑鲈（加州鲈）','乌鳢（黑鱼）','月鳢（七星鱼）','吉利慈鲷'];else candidates=temp<10?['鳜鱼','鲶鱼','大口黑鲈（加州鲈）','翘嘴鲌']:['翘嘴鲌','大口黑鲈（加州鲈）','鳜鱼','鳡鱼'];if(storm)candidates=candidates.slice(0,2);
  const chips=candidates.slice(0,3).map(name=>fish.some(f=>f.name===name)?`<button type="button" class="fish-chip" data-species="${safeText(name)}">${safeText(name)}</button>`:`<span class="fish-chip static">${safeText(name)}</span>`).join('');
- return`<div class="analysis-top"><div><span class="eyebrow">FISHING WINDOW</span><h4>适钓评估</h4></div><div class="fishing-grade ${storm||score<35?'poor':score<58?'fair':score<78?'good':'best'}"><strong>${grade}</strong><span>${score} / 100</span></div></div><p class="analysis-note">按天气、风雨${water==='coast'?'与潮浪趋势':'与所选水域'}做的启发式参考，不代表鱼获保证。</p><ul class="analysis-reasons">${reasons.slice(0,3).map(s=>`<li>${safeText(s)}</li>`).join('')}</ul><div class="species-suggest"><span>可优先考虑</span><div>${chips}</div></div>${storm?'<p class="safety-alert">雷雨、强风或突发涨水时请停止作钓，遵守当地禁钓与海岸安全提示。</p>':''}`;
+ return`<div class="analysis-top"><div><span class="eyebrow">FISHING WINDOW</span><h4>适钓评估</h4></div><div class="fishing-grade ${storm||score<35?'poor':score<58?'fair':score<78?'good':'best'}">${grade?`<strong>${grade}</strong>`:''}<span>${score} / 100</span></div></div><p class="analysis-note">按天气、风雨${water==='coast'?'与潮浪趋势':'与所选水域'}做的启发式参考，不代表鱼获保证。</p><ul class="analysis-reasons">${reasons.slice(0,3).map(s=>`<li>${safeText(s)}</li>`).join('')}</ul><div class="species-suggest"><span>可优先考虑</span><div>${chips}</div></div>${storm?'<p class="safety-alert">雷雨、强风或突发涨水时请停止作钓，遵守当地禁钓与海岸安全提示。</p>':''}`;
 }
 init();

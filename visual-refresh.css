@@ -170,8 +170,6 @@ main .page{max-width:1280px;padding:56px clamp(24px,5vw,64px) 72px}
   box-shadow:0 12px 30px rgba(31,57,44,.055);
 }
 .result-card.featured{border-color:#234c3d;background:linear-gradient(145deg,#183e34,#102d2b 75%)}
-.result-top{margin-bottom:16px}
-.rank{font-weight:600;letter-spacing:.09em}
 .score{border-radius:999px;padding:7px 10px}
 .result-art{height:150px;border-radius:14px;background:#e8e9df;margin-bottom:16px}
 .result-card h3{font-size:22px}
