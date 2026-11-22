@@ -16,6 +16,7 @@ on:
       - '*.svg'
       - 'lure-photos-clean/**'
       - 'fish-photos-clean/**'
+      - 'rig-photos-clean/**'
 
 jobs:
   build:

@@ -10,8 +10,8 @@ android {
         applicationId 'com.guigui.yeluzhinan'
         minSdk 23
         targetSdk 35
-        versionCode 2
-        versionName '1.1.0'
+        versionCode 3
+        versionName '1.2.0'
     }
 
     sourceSets {
@@ -48,7 +48,7 @@ tasks.register('syncSiteAssets', Sync) {
         include 'favicon-32.png', 'apple-touch-icon.png', 'icon.svg', 'icon-192.png', 'icon-512.png'
         include 'icon-maskable-192.png', 'icon-maskable-512.png', 'hero-fisher.jpg'
         include 'logo-hupao.png', 'logo-hupao-white.png'
-        include 'lure-photos-clean/*.png', 'fish-photos-clean/*.png'
+        include 'lure-photos-clean/*.png', 'fish-photos-clean/*.png', 'rig-photos-clean/*.png'
     }
     into "$buildDir/generated/site-assets/site"
 }
